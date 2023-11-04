@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DiagnosticsManager">
+      <HintPath>..\..\..\DiagnosticsManager\DiagnosticsManager\bin\Release\netstandard2.0\DiagnosticsManager.dll</HintPath>
+    </Reference>
+    <Reference Include="TaskDriver">
+      <HintPath>..\..\..\TaskDriver\TaskDriver\bin\Release\netstandard2.0\TaskDriver.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
