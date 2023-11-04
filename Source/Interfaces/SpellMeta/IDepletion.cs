@@ -2,7 +2,7 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace SpellCompiler
+namespace Spell
 {
     /// <summary>
     /// Depletion is how a spell drains resources as it's being used.

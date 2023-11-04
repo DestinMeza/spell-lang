@@ -1,9 +1,8 @@
-using SpellCompiler.SpellReader;
 using System.IO;
 using System.Threading;
 using static DiagnosticsManager.DiagnosticsManager;
 
-namespace SpellCompiler
+namespace Spell.IO
 {
     /// <summary>
     /// SpellFile is a C# conversion of a .spl file. That's used to help implement skill functionality.

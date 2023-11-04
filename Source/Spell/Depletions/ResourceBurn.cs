@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using System;
 
-namespace SpellCompiler
+namespace Spell
 {
     /// <summary>
     /// Burn Rate is by how long it takes to reach max consumption or total depetion.

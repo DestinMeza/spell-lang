@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SpellCompiler.SpellReader.Binding
+namespace Spell.Binding
 {
     internal sealed class BoundUnaryExpressionNode : BoundExpressionNode 
     {

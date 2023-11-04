@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace SpellCompiler.SpellReader.Syntax
+namespace Spell.Syntax
 {
     public sealed class SyntaxTree 
     {

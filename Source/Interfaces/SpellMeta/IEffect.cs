@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace SpellCompiler
+namespace Spell
 {
     /// <summary>
     /// Effects are applied through out the lifetime of a spell.

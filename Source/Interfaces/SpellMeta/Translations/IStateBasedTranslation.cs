@@ -1,4 +1,4 @@
-namespace SpellCompiler
+namespace Spell
 {
     public interface IStateBasedTranslation : ITranslation
     {

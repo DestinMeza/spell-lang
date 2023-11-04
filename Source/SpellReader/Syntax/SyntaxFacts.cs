@@ -1,4 +1,4 @@
-﻿namespace SpellCompiler.SpellReader.Syntax
+﻿namespace Spell.Syntax
 {
     public enum SyntaxKind
     {

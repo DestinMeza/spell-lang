@@ -5,7 +5,7 @@ using System.Text;
 using Newtonsoft.Json;
 using static DiagnosticsManager.DiagnosticsManager;
 
-namespace SpellCompiler.Utils
+namespace Spell.Utils
 {
     public class SpellSaver
     {

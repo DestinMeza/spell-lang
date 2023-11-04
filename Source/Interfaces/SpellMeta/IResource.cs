@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace SpellCompiler
+namespace Spell
 {
     /// <summary>
     /// Resources are what get expended on use of a spell.

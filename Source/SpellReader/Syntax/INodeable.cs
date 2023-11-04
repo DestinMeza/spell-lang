@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SpellCompiler.SpellReader.Syntax
+namespace Spell.Syntax
 {
     /// <summary>
     /// This is an interface that is used to Implement Tree Node functionality.

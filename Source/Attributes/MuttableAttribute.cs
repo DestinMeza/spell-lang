@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System;
 
-namespace SpellCompiler
+namespace Spell
 {
     /// <summary>
     /// Muttable attribute allows easy implementation for dynamic Property Manipulation at runtime.

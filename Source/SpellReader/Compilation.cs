@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using SpellCompiler.SpellReader.Binding;
-using SpellCompiler.SpellReader.Syntax;
+using Spell.Binding;
+using Spell.Syntax;
 
-namespace SpellCompiler.SpellReader
+namespace Spell
 {
     public sealed class Compilation
     {

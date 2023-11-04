@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace SpellCompiler
+namespace Spell
 {
     [System.Serializable]
     public class MultiTranslation : IStateBasedTranslation

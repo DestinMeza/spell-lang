@@ -1,8 +1,4 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-
-namespace SpellCompiler
+namespace Spell
 {
     /// <summary>
     /// Serializable data that is managed via custom JsonConverters.

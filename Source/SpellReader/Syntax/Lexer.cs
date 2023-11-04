@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace SpellCompiler.SpellReader.Syntax
+namespace Spell.Syntax
 {
     internal sealed class Lexer
     {

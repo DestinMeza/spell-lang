@@ -1,4 +1,4 @@
-﻿namespace SpellCompiler.SpellReader.Binding
+﻿namespace Spell.Binding
 {
     internal enum BoundUnaryOperatorKind 
     {

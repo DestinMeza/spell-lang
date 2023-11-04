@@ -2,16 +2,16 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
-using SpellCompiler.SpellReader;
-using SpellCompiler.SpellReader.Binding;
-using SpellCompiler.SpellReader.Syntax;
-using TaskDriver.Tasks;
+using Spell.Binding;
+using Spell.Syntax;
+using Spell.IO;
+using GameTask.Tasks;
 using static DiagnosticsManager.DiagnosticsManager;
 
-namespace SpellCompiler
+namespace Spell
 {
     /// <summary>
-    /// Spell Interpreter is used for processing a spell's functionality. 
+    /// Spell Compiler is used for processing a spell's functionality. 
     /// Parsing the SPL Lang and turning it into C# code to be run and be used dynamically.
     /// </summary>
     public class SpellCompiler

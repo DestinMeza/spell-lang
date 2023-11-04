@@ -1,6 +1,7 @@
 using System;
+using Spell.IO;
 
-namespace SpellCompiler
+namespace Spell
 {
     /// <summary>
     /// Magic types are aspects that manipulate spell's core stat values.

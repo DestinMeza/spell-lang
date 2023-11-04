@@ -1,8 +1,8 @@
-using SpellCompiler.SpellReader.Syntax;
+using Spell.Syntax;
 using System;
 using System.Collections.Generic;
 
-namespace SpellCompiler.SpellReader.Binding
+namespace Spell.Binding
 {
 
     internal sealed class Binder 

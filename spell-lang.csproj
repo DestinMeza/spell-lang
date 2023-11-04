@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>$(AssemblyName)</PackageId>
+    <Title>Spell Language</Title>
+    <Authors>TheMenagerie</Authors>
+    <Description>This language is used to make Spells in Spell Weaver. In Spell Weaver spells are the very fabric of the universe. In this world you can manipulate virtually anything. The goal with Spell Lang is to make a true Wizard experience. With a world that is surrounded with knowledge</Description>
+    <Copyright>https://choosealicense.com/licenses/mit/</Copyright>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/DestinMeza/spell-lang</RepositoryUrl>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>License.txt</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DiagnosticsManager">
+      <HintPath>..\..\..\DiagnosticsManager\DiagnosticsManager\bin\Release\netstandard2.0\DiagnosticsManager.dll</HintPath>
+    </Reference>
+    <Reference Include="GameTask">
+      <HintPath>..\..\..\GameTask\GameTask\bin\Release\netstandard2.0\GameTask.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="License.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

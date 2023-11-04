@@ -1,7 +1,7 @@
 ﻿using System;
-using SpellCompiler.SpellReader.Syntax;
+using Spell.Syntax;
 
-namespace SpellCompiler.SpellReader.Binding
+namespace Spell.Binding
 {
     internal sealed class BoundBinaryOperator
     {

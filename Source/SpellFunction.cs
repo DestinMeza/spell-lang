@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace SpellCompiler
+namespace Spell.IO
 {
     /// <summary>
     /// Spell Function is used for allowing a simple way to Invoke dynamically created functions at runtime.

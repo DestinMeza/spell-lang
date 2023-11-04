@@ -1,7 +1,7 @@
 ﻿using System;
-using SpellCompiler.SpellReader.Binding;
+using Spell.Binding;
 
-namespace SpellCompiler.SpellReader
+namespace Spell
 {
 
     internal sealed class Evaluator 

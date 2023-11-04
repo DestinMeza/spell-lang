@@ -2,7 +2,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System;
 
-namespace SpellCompiler
+namespace Spell
 {
     public interface ITranslation : ISerializable
     {

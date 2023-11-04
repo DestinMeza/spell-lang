@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace SpellCompiler
+namespace Spell
 {
     /// <summary>
     /// Spell Properties are used for post Json Deserialization and for OnCreation for inputing spell config.
