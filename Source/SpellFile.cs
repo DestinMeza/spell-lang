@@ -1,6 +1,5 @@
 using System.IO;
 using System.Threading;
-using static DiagnosticsManager.DiagnosticsManager;
 
 namespace Spell.IO
 {
@@ -26,7 +25,7 @@ namespace Spell.IO
 
             if (!File.Exists(pathToFile + EXTENSION)) 
             {
-                LogErrorMessage($"{FilePath} path not found.");
+                Diagnostics.LogErrorMessage($"{FilePath} path not found.");
                 return;
             }
 

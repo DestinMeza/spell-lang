@@ -5,13 +5,10 @@ namespace Spell.Syntax
 
     internal sealed class Parser
     {
-        public IEnumerable<string> Diagnostics => _diagnostics;
-
         private SyntaxToken CurrentSyntaxToken => GetTokenAtOffset(0);
 
         private readonly SyntaxToken[] _tokens;
 
-        private List<string> _diagnostics = new List<string>();
         private int _position;
 
         public Parser(string text)
@@ -37,7 +34,6 @@ namespace Spell.Syntax
             } while (token.SyntaxKind != SyntaxKind.EndOfLineToken);
 
             _tokens = tokens.ToArray();
-            _diagnostics.AddRange(lexer.Diagnostics);
         }
 
         private SyntaxToken GetTokenAtOffset(int offset)
@@ -71,7 +67,7 @@ namespace Spell.Syntax
                 return NextToken();
             }
 
-            _diagnostics.Add($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{syntaxKind}>");
+            Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{syntaxKind}>");
 
             return new SyntaxToken(syntaxKind, CurrentSyntaxToken.Position, null, null);
         }
@@ -91,7 +87,7 @@ namespace Spell.Syntax
             var expression = ParseExpression();
             var endOfFileToken = StrictMatch(SyntaxKind.EndOfLineToken);
 
-            return new SyntaxTree(_diagnostics, expression, endOfFileToken);
+            return new SyntaxTree(expression, endOfFileToken);
         }
 
         private ExpressionSyntaxNode ParseExpression(int parentPrecedence = 0)
@@ -133,7 +129,7 @@ namespace Spell.Syntax
 
                 if (string.IsNullOrEmpty(leftToken.Text))
                 {
-                    _diagnostics.Add($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.OpenParenthesisToken}>");
+                    Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.OpenParenthesisToken}>");
                 }
 
                 var expression = ParseExpression();
@@ -142,7 +138,7 @@ namespace Spell.Syntax
 
                 if (string.IsNullOrEmpty(rightToken.Text))
                 {
-                    _diagnostics.Add($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.CloseParenthesisToken}>");
+                    Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.CloseParenthesisToken}>");
                 }
 
                 return new ParenthesizedExpressionSytanxNode(leftToken, expression, rightToken);
@@ -161,7 +157,7 @@ namespace Spell.Syntax
 
                 if (string.IsNullOrEmpty(numberToken.Text) || numberToken.Value == null)
                 {
-                    _diagnostics.Add($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.NumberToken}>");
+                    Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.NumberToken}>");
                 }
 
                 return new LiteralExpressionSyntaxNode(numberToken);

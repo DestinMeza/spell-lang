@@ -3,7 +3,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
-using static DiagnosticsManager.DiagnosticsManager;
 
 namespace Spell.Utils
 {
@@ -41,14 +40,13 @@ namespace Spell.Utils
 
             bool hasfile = File.Exists(filePath);
 
-            if (hasfile && DebugType == EDebugType.Explicit) 
+            if (hasfile && Diagnostics.DebugType == EDebugType.Explicit) 
             {
                 string fileText = File.ReadAllText(filePath);
 
                 savePathHandle.Invoke(filePath);
 
-
-                LogMessage(fileText);
+                Diagnostics.LogMessage(fileText);
             }
 
             return hasfile;
@@ -58,7 +56,7 @@ namespace Spell.Utils
         {
             string filePath = $"{_savePath}\\{fileName}{_ext}";
 
-            Assert(File.Exists(filePath), $"File does not exist at path {filePath}");
+            Diagnostics.Assert(File.Exists(filePath), $"File does not exist at path {filePath}");
 
             string jsonInText;
             T readInstance;
@@ -99,7 +97,7 @@ namespace Spell.Utils
                 readInstance = JsonConvert.DeserializeObject<T>(jsonInText, settings);
             }
 
-            Assert(readInstance != null, "File failure to convert to type from JSON.");
+            Diagnostics.Assert(readInstance != null, "File failure to convert to type from JSON.");
 
             readCallback.Invoke(readInstance);
         }

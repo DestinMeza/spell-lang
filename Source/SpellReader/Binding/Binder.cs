@@ -1,15 +1,13 @@
 using Spell.Syntax;
 using System;
 using System.Collections.Generic;
+using Spell;
 
 namespace Spell.Binding
 {
 
     internal sealed class Binder 
     {
-        private readonly List<string> _diagnostics = new List<string>();
-        public IEnumerable<string> Diagnostics => _diagnostics;
-
         public BoundExpressionNode BindExpression(ExpressionSyntaxNode syntaxNode) 
         {
             switch (syntaxNode.SyntaxKind) 
@@ -40,7 +38,7 @@ namespace Spell.Binding
 
             if (boundOperator == null) 
             {
-                _diagnostics.Add($"Unary operator '{syntax.OperatorToken.Text}' is not defined for type {boundOperand.Type}");
+                Diagnostics.LogErrorMessage($"Unary operator '{syntax.OperatorToken.Text}' is not defined for type {boundOperand.Type}");
             }
 
             return new BoundUnaryExpressionNode(boundOperator, boundOperand);
@@ -54,7 +52,7 @@ namespace Spell.Binding
 
             if (boundOperator == null)
             {
-                _diagnostics.Add($"Unary operator '{syntax.OperatorToken.Text}' is not defined for type {boundLeft.Type} and {boundRight.Type}");
+                Diagnostics.LogErrorMessage($"Unary operator '{syntax.OperatorToken.Text}' is not defined for type {boundLeft.Type} and {boundRight.Type}");
             }
 
             return new BoundBinaryExpressionNode(boundLeft, boundOperator, boundRight);

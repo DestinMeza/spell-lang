@@ -5,8 +5,7 @@ using System.Linq;
 using Spell.Binding;
 using Spell.Syntax;
 using Spell.IO;
-using GameTask.Tasks;
-using static DiagnosticsManager.DiagnosticsManager;
+using Spell.Async.Tasks;
 
 namespace Spell
 {
@@ -30,7 +29,7 @@ namespace Spell
                 return await Run(s, r);
             }
 
-            GameTask<SpellFunction[]> task = new GameTask<SpellFunction[]>(result, asyncFunction(sourceCode, result));
+            AsyncTask<SpellFunction[]> task = new AsyncTask<SpellFunction[]>(result, asyncFunction(sourceCode, result));
 
             task.Forget();
         }
@@ -38,7 +37,7 @@ namespace Spell
         {
             SpellFunction[] spellFunctions = null;
 
-            LogMessage("-----Reading File------");
+            Diagnostics.LogMessage("-----Reading File------");
 
             const bool isImmediateBreak = true;
 
@@ -54,36 +53,19 @@ namespace Spell
                     Parser parser = new Parser(sourceCode);
                     SyntaxTree syntaxTree = parser.Parse();
 
-                    LogMessage(GetTreeView(syntaxTree.Root));
+                    Diagnostics.LogMessage(GetTreeView(syntaxTree.Root));
 
                     Binder binder = new Binder();
-                    var boundExpression = binder.BindExpression(syntaxTree.Root);
-
-                    var diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
-
-                    if (diagnostics.Any())
-                    {
-                        foreach (var diagnostic in syntaxTree.Diagnostics)
-                        {
-                            LogErrorMessage(diagnostic);
-                        }
-                    }
-                    else
-                    {
-                        var e = new Evaluator(boundExpression);
-                        var treeResult = e.Evaluate();
-                        LogMessage($"Value: {treeResult}");
-                    }
 
                     await Task.Delay(200);
                 }
                 while (!result.CancellationToken.IsCancellationRequested && !isImmediateBreak);
 
-                LogMessage("End Of File Reached");
+                Diagnostics.LogMessage("End Of File Reached");
             }
             catch (Exception e)
             {
-                LogErrorMessage($"Error in Interpreter: {e}");
+                Diagnostics.LogErrorMessage($"Error in Interpreter: {e}");
             }
 
             return result;
@@ -126,7 +108,7 @@ namespace Spell
         {
             SpellFunction[] spellFunctions = null;
 
-            LogMessage("-----Reading File------");
+            Diagnostics.LogMessage("-----Reading File------");
 
 
             const bool isImmediateBreak = true;
@@ -143,34 +125,18 @@ namespace Spell
                     Parser parser = new Parser(sourceCode);
                     SyntaxTree syntaxTree = parser.Parse();
 
-                    LogMessage(GetTreeView(syntaxTree.Root));
+                    Diagnostics.LogMessage(GetTreeView(syntaxTree.Root));
 
                     Binder binder = new Binder();
                     var boundExpression = binder.BindExpression(syntaxTree.Root);
-
-                    var diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
-
-                    if (diagnostics.Any())
-                    {
-                        foreach (var diagnostic in syntaxTree.Diagnostics)
-                        {
-                            LogErrorMessage(diagnostic);
-                        }
-                    }
-                    else
-                    {
-                        var e = new Evaluator(boundExpression);
-                        var treeResult = e.Evaluate();
-                        LogMessage($"Value: {treeResult}");
-                    }
                 }
                 while (!isImmediateBreak);
 
-                LogMessage("End Of File Reached");
+                Diagnostics.LogMessage("End Of File Reached");
             }
             catch (Exception e)
             {
-                LogErrorMessage($"Error in Interpreter: {e}");
+                Diagnostics.LogErrorMessage($"Error in Interpreter: {e}");
             }
         }
     }
