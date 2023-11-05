@@ -27,11 +27,16 @@ namespace Spell.Async.Tasks
             return (TaskResult) => _function.Invoke(TaskResult);
         }
 
+        public void RunAsync() 
+        {
+            AsyncTaskManager.RunAsync(this);
+        }
+
         public void Forget()
         {
-            var voidTask = new AsyncTaskVoid(this);
+            AsyncTaskVoid asyncTaskVoid = new AsyncTaskVoid(this);
 
-            voidTask.Forget();
+            AsyncTaskManager.Run(asyncTaskVoid);
         }
     }
 }

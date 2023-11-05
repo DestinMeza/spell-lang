@@ -27,8 +27,12 @@ namespace Spell.Binding
 
         private BoundExpressionNode BindLiteralExpression(LiteralExpressionSyntaxNode syntax) 
         {
-            var value = syntax.Value ?? 0;
-            return new BoundLiteralExpression(value);
+            if (syntax.Value == null) 
+            {
+                throw new Exception($"Unexpected value {syntax.Value}");
+            }
+
+            return new BoundLiteralExpression(syntax.Value);
         }
 
         private BoundExpressionNode BindUnaryExpression(UnaryExpressionSyntax syntax)
@@ -52,7 +56,7 @@ namespace Spell.Binding
 
             if (boundOperator == null)
             {
-                Diagnostics.LogErrorMessage($"Unary operator '{syntax.OperatorToken.Text}' is not defined for type {boundLeft.Type} and {boundRight.Type}");
+                Diagnostics.LogErrorMessage($"Binary operator '{syntax.OperatorToken.Text}' is not defined for type {boundLeft.Type} and {boundRight.Type}");
             }
 
             return new BoundBinaryExpressionNode(boundLeft, boundOperator, boundRight);

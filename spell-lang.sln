@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "spell-lang", "spell-lang.csproj", "{316263B6-80F8-4087-A113-132894C25CD6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpellReader", "..\spell-lang-console\SpellReader.csproj", "{2D46F64E-D342-4280-ACBA-3397629F8C61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{316263B6-80F8-4087-A113-132894C25CD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{316263B6-80F8-4087-A113-132894C25CD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{316263B6-80F8-4087-A113-132894C25CD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D46F64E-D342-4280-ACBA-3397629F8C61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D46F64E-D342-4280-ACBA-3397629F8C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D46F64E-D342-4280-ACBA-3397629F8C61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D46F64E-D342-4280-ACBA-3397629F8C61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

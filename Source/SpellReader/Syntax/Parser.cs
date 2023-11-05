@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Spell.Syntax
 {
@@ -169,7 +170,7 @@ namespace Spell.Syntax
                 case SyntaxKind.OpenParenthesisToken: return ParseParenthesizedExpression();
                 case SyntaxKind.FalseKeyword: return ParseTrueOrFalseKeyword();
                 case SyntaxKind.TrueKeyword: return ParseTrueOrFalseKeyword();
-                default: return null;
+                default: throw new NotSupportedException();
             };
         }
     }

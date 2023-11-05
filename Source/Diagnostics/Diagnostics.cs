@@ -1,43 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Spell
 {
-    public struct Log
-    {
-        public string message { get; }
-        public ELogType ELogType { get; }
-        public string memberName { get; }
-        public string sourceFilePath { get; }
-        public int sourceLineNumber { get; }
-
-        public Log(string _message, ELogType eLogType, string _memberName, string _sourceFilePath, int _sourceLineNumber)
-        {
-            message = _message;
-            ELogType = eLogType;
-            memberName = _memberName;
-            sourceLineNumber = _sourceLineNumber;
-            sourceFilePath = _sourceFilePath;
-        }
-
-        public string Message() 
-        {
-            switch (Diagnostics.DebugType) 
-            {
-                case EDebugType.Default:
-                    return message;
-                case EDebugType.Explicit:
-                    return $"{message} File: {sourceLineNumber} Line: {sourceFilePath} From: {memberName}";
-                case EDebugType.Mute:
-                    return "";
-                default:
-                    return message;
-            }
-        }
-    }
-
     public enum EDebugType
     {
         Default,
@@ -45,136 +10,108 @@ namespace Spell
         Explicit,
     }
 
-    public enum ELogType
-    {
-        Default,
-        Warning,
-        Error
-    }
-
     public class Diagnostics
     {
         public static EDebugType DebugType => instance.debugType;
 
-        protected static Diagnostics instance;
+        public static Diagnostics Instance 
+        {
+            get 
+            {
+                if (instance == null) 
+                {
+                    instance = new Diagnostics();
+                    LogWarningMessage("Warning: Diagnostics was created from a static call and has no direct management. " +
+                        "It's recommended to create an Instance of this manually.");
+                }
+
+                return instance;
+            }
+        }
+
+        private static Diagnostics instance;
 
         protected EDebugType debugType;
-        protected List<Log> logs { get; }
+
+        public Log[] logs => Logs.ToArray();
+        protected List<Log> Logs { get; set; }
 
         public Diagnostics(EDebugType _debugType = EDebugType.Default)
         {
             if (instance != null)
             {
-                LogErrorMessage("Debugger has been created multiple times.");
-                return;
+                throw new Exception("Diagnostics has been created more than once.");
             }
 
             instance = this;
 
-            logs = new List<Log>();
+            Logs = new List<Log>();
             debugType = _debugType;
         }
 
+        protected virtual void OnAssert(string errorMessage, string memberName, string sourceFilePath, int sourceLineNumber) 
+        {
 
-        protected virtual bool HiddenAssert(bool state, string errorMessage, string memberName, string sourceFilePath, int sourceLineNumber)
-        {
-            throw new NotImplementedException();
         }
-        protected virtual void HiddenLog(string message, string memberName, string sourceFilePath, int sourceLineNumber)
+        protected virtual void OnHiddenLog(string message, string memberName, string sourceFilePath, int sourceLineNumber) 
         {
-            throw new NotImplementedException();
+        
         }
-        protected virtual void HiddenLogWarning(string message, string memberName, string sourceFilePath, int sourceLineNumber)
-        {
-            throw new NotImplementedException();
+        protected virtual void OnHiddenWarning(string message, string memberName, string sourceFilePath, int sourceLineNumber) 
+        { 
+        
         }
-        protected virtual void HiddenLogError(string message, string memberName, string sourceFilePath, int sourceLineNumber)
+        protected virtual void OnHiddenLogError(string message, string memberName, string sourceFilePath, int sourceLineNumber)
         {
-            throw new NotImplementedException();
+        
         }
 
-        public static bool Assert(bool state, string errorMessage,
-            [CallerMemberName] string memberName = "",
-            [CallerFilePath] string sourceFilePath = "",
-            [CallerLineNumber] int sourceLineNumber = 0)
+        public static bool Assert(bool state, string errorMessage, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0)
         {
-            if (instance == null)
+            if (state) 
             {
-                instance = new DefaultDiagnostics();
+                Instance.OnAssert(errorMessage, memberName, sourceFilePath, sourceLineNumber);
             }
 
-            return instance.HiddenAssert(state, errorMessage, memberName, sourceFilePath, sourceLineNumber);
+            return state;
         }
 
-        public static void LogMessage(string message,
-            [CallerMemberName] string memberName = "",
-            [CallerFilePath] string sourceFilePath = "",
-            [CallerLineNumber] int sourceLineNumber = 0)
+        public static void LogMessage(string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0)
         {
-            if (instance == null)
-            {
-                instance = new DefaultDiagnostics();
-            }
+            Instance.Logs.Add(new Log(message, ELogType.Default, memberName, sourceFilePath, sourceLineNumber));
 
-            instance.HiddenLog(message, memberName, sourceFilePath, sourceLineNumber);
+            Instance.OnHiddenLog(message, memberName, sourceFilePath, sourceLineNumber);
         }
 
-        public static void LogWarningMessage(string message,
-            [CallerMemberName] string memberName = "",
-            [CallerFilePath] string sourceFilePath = "",
-            [CallerLineNumber] int sourceLineNumber = 0)
+        public static void LogWarningMessage(string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0)
         {
-            if (instance == null)
-            {
-                instance = new DefaultDiagnostics();
-            }
+            Instance.Logs.Add(new Log(message, ELogType.Warning, memberName, sourceFilePath, sourceLineNumber));
 
-            instance.HiddenLogWarning(message, memberName, sourceFilePath, sourceLineNumber);
+            Instance.OnHiddenWarning(message, memberName, sourceFilePath, sourceLineNumber);
         }
 
-        public static void LogErrorMessage(string message,
-            [CallerMemberName] string memberName = "",
-            [CallerFilePath] string sourceFilePath = "",
-            [CallerLineNumber] int sourceLineNumber = 0)
+        public static void LogErrorMessage(string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0)
         {
-            if (instance == null)
-            {
-                instance = new DefaultDiagnostics();
-            }
+            Instance.Logs.Add(new Log(message, ELogType.Error, memberName, sourceFilePath, sourceLineNumber));
 
-            instance.HiddenLogError(message, memberName, sourceFilePath, sourceLineNumber);
+            Instance.OnHiddenLogError(message, memberName, sourceFilePath, sourceLineNumber);
         }
 
         public static EDebugType SetDebugState(EDebugType debugType)
         {
-            if (instance == null)
-            {
-                instance = new DefaultDiagnostics();
-            }
+            Instance.debugType = debugType;
 
-            instance.debugType = debugType;
-
-            return instance.debugType;
+            return Instance.debugType;
         }
 
         public static IReadOnlyList<Log> GetLogs()
         {
-            if (instance == null)
-            {
-                instance = new DefaultDiagnostics();
-            }
-
-            return instance.logs;
+            return Instance.Logs;
         }
 
         public static void ClearLogs() 
         {
-            if (instance == null)
-            {
-                instance = new DefaultDiagnostics();
-            }
-
-            instance.logs.Clear();
+            Instance.Logs.Clear();
         }
     }
 }

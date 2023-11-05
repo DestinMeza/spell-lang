@@ -5,13 +5,8 @@ namespace Spell.Syntax
 {
     internal sealed class Lexer
     {
-        public IEnumerable<string> Diagnostics => _diagnostics;
-
         private readonly string _text;
         private int _position;
-
-        private List<string> _diagnostics = new List<string>();
-
         public Lexer(string text)
         {
             _text = text;
@@ -57,7 +52,7 @@ namespace Spell.Syntax
                 var text = _text.Substring(start, length);
                 if (!int.TryParse(text, out int value)) 
                 {
-                    _diagnostics.Add($"The number {_text} isn't valid Int32.");
+                    Diagnostics.LogErrorMessage($"The number {_text} isn't valid Int32.");
                 }
 
                 return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
@@ -117,25 +112,25 @@ namespace Spell.Syntax
                 case '&':
                     if (Lookahead == '&') 
                     {
-                        operationToken = new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, _position + 2, "&&", null);
+                        operationToken = new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, _position += 2, "&&", null);
                     }
                     break;
                 case '|':
                     if (Lookahead == '|')
                     {
-                        operationToken = new SyntaxToken(SyntaxKind.PipePipeToken, _position + 2, "||", null);
+                        operationToken = new SyntaxToken(SyntaxKind.PipePipeToken, _position += 2, "||", null);
                     }
                     break;
                 case '=':
                     if (Lookahead == '=')
                     {
-                        operationToken = new SyntaxToken(SyntaxKind.EqualsEqualsToken, _position + 2, "==", null);
+                        operationToken = new SyntaxToken(SyntaxKind.EqualsEqualsToken, _position += 2, "==", null);
                     }
                     break;
                 case '!':
                     if (Lookahead == '=')
                     {
-                        operationToken = new SyntaxToken(SyntaxKind.BangEqualsToken, _position + 2, "!=", null);
+                        operationToken = new SyntaxToken(SyntaxKind.BangEqualsToken, _position += 2, "!=", null);
                     }
                     else 
                     {
@@ -146,12 +141,13 @@ namespace Spell.Syntax
                     break;
             }
 
+
             if (operationToken != null) 
             {
                 return operationToken;
             }
 
-            _diagnostics.Add($"ERROR: bad character input: '{Current}'");
+            Diagnostics.LogErrorMessage($"ERROR: bad character input: '{Current}'");
             return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);
         }
 

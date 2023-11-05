@@ -38,7 +38,7 @@ namespace Spell.IO
 
             SpellCompiler spellCompiler = new SpellCompiler();
 
-            spellCompiler.RunAsync(_sourceText, ct);
+            spellCompiler.ReadAsync(_sourceText, ct);
         }
 
         public void ReadSpellFile() 
@@ -47,7 +47,7 @@ namespace Spell.IO
 
             SpellCompiler spellCompiler = new SpellCompiler();
 
-            spellCompiler.Run(_sourceText);
+            spellCompiler.Read(_sourceText);
         }
 
         public override string ToString()

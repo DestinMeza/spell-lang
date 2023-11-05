@@ -18,7 +18,7 @@ namespace Spell.Async.Tasks
 
         public void Forget()
         {
-            AsyncTaskManager.Run(this, AsyncTaskManager.DefaultToken);
+            AsyncTaskManager.Run(this);
         }
     }
 }

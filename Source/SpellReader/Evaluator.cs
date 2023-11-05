@@ -23,7 +23,6 @@ namespace Spell
             {
                 return n.Value;
             }
-
             if (node is BoundUnaryExpressionNode u) 
             {
                 var operand = EvaluateExpression(u.Operand);
@@ -39,7 +38,6 @@ namespace Spell
                     default: throw new Exception($"Unexpected unary operator {u.BoundOperator.Kind}");
                 }
             }
-
             if (node is BoundBinaryExpressionNode b) 
             {
                 var left = EvaluateExpression(b.Left);

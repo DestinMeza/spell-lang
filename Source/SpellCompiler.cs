@@ -6,6 +6,7 @@ using Spell.Binding;
 using Spell.Syntax;
 using Spell.IO;
 using Spell.Async.Tasks;
+using Spell.Async;
 
 namespace Spell
 {
@@ -17,61 +18,91 @@ namespace Spell
     {
         #region Async
 
-        public void RunAsync(string sourceCode, CancellationToken ct)
+        public void ReadAsync(string sourceCode, CancellationToken ct, Action<TaskResult> callback = null)
         {
             TaskResult result = new TaskResult()
             {
+                Callback = callback,
                 CancellationToken = ct
             };
 
             async Task<TaskResult> asyncFunction(string s, TaskResult r) 
             {
-                return await Run(s, r);
+                return await ReadSourceCode(s, r);
             }
 
-            AsyncTask<SpellFunction[]> task = new AsyncTask<SpellFunction[]>(result, asyncFunction(sourceCode, result));
+            AsyncTask<object> task = new AsyncTask<object>(result, asyncFunction(sourceCode, result));
 
-            task.Forget();
+            task.RunAsync();
         }
-        private async Task<TaskResult> Run(string sourceCode, TaskResult result)
+
+        internal async Task<TaskResult> ReadSourceCode(string sourceCode, TaskResult result)
         {
-            SpellFunction[] spellFunctions = null;
-
             Diagnostics.LogMessage("-----Reading File------");
-
-            const bool isImmediateBreak = true;
 
             try
             {
-                do
+                if (string.IsNullOrWhiteSpace(sourceCode))
                 {
-                    if (string.IsNullOrWhiteSpace(sourceCode))
-                    {
-                        continue;
-                    }
-
-                    Parser parser = new Parser(sourceCode);
-                    SyntaxTree syntaxTree = parser.Parse();
-
-                    Diagnostics.LogMessage(GetTreeView(syntaxTree.Root));
-
-                    Binder binder = new Binder();
-
-                    await Task.Delay(200);
+                    Diagnostics.LogErrorMessage("Error: Empty Source Code");
+                    result.Result = null;
+                    return result;
                 }
-                while (!result.CancellationToken.IsCancellationRequested && !isImmediateBreak);
+
+                Parser parser = new Parser(sourceCode);
+                SyntaxTree syntaxTree = parser.Parse();
+
+                Diagnostics.LogMessage(GetTreeView(syntaxTree.Root));
+
+                Binder binder = new Binder();
+                BoundExpressionNode boundNode = binder.BindExpression(syntaxTree.Root);
+                Evaluator evaluator = new Evaluator(boundNode);
+
+                result.Result = evaluator.Evaluate();
+
+                //TODO add async Parsing. For now this is Testing for Async system
 
                 Diagnostics.LogMessage("End Of File Reached");
             }
             catch (Exception e)
             {
-                Diagnostics.LogErrorMessage($"Error in Interpreter: {e}");
+                Diagnostics.LogErrorMessage($"Error in Compiler: {e}");
             }
 
             return result;
         }
 
         #endregion
+
+        public void Read(string sourceCode)
+        {
+            Diagnostics.LogMessage("-----Reading File------");
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(sourceCode))
+                {
+                    Diagnostics.LogErrorMessage("Error: Empty Source Code");
+                    return;
+                }
+
+                Parser parser = new Parser(sourceCode);
+                SyntaxTree syntaxTree = parser.Parse();
+
+                Diagnostics.LogMessage(GetTreeView(syntaxTree.Root));
+
+                Binder binder = new Binder();
+                BoundExpressionNode boundNode = binder.BindExpression(syntaxTree.Root);
+                Evaluator evaluator = new Evaluator(boundNode);
+
+                Diagnostics.LogMessage($"Value: {evaluator.Evaluate()}");
+                Diagnostics.LogMessage("End Of File Reached");
+            }
+            catch (Exception e)
+            {
+                Diagnostics.LogErrorMessage($"Error in Compiler: {e}");
+            }
+        }
 
         private string GetTreeView(INodeable node, int depth = 0, bool isLast = true)
         {
@@ -102,42 +133,6 @@ namespace Spell
             }
 
             return outputString + childrenStrings;
-        }
-
-        public void Run(string sourceCode) 
-        {
-            SpellFunction[] spellFunctions = null;
-
-            Diagnostics.LogMessage("-----Reading File------");
-
-
-            const bool isImmediateBreak = true;
-
-            try
-            {
-                do
-                {
-                    if (string.IsNullOrWhiteSpace(sourceCode))
-                    {
-                        continue;
-                    }
-
-                    Parser parser = new Parser(sourceCode);
-                    SyntaxTree syntaxTree = parser.Parse();
-
-                    Diagnostics.LogMessage(GetTreeView(syntaxTree.Root));
-
-                    Binder binder = new Binder();
-                    var boundExpression = binder.BindExpression(syntaxTree.Root);
-                }
-                while (!isImmediateBreak);
-
-                Diagnostics.LogMessage("End Of File Reached");
-            }
-            catch (Exception e)
-            {
-                Diagnostics.LogErrorMessage($"Error in Interpreter: {e}");
-            }
         }
     }
 }
