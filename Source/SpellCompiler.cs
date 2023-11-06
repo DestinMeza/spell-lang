@@ -100,7 +100,7 @@ namespace Spell
             }
             catch (Exception e)
             {
-                Diagnostics.LogErrorMessage($"Error in Compiler: {e}");
+                Diagnostics.LogErrorMessage($"Error in Compiler: {e} {e.Source}");
             }
         }
 

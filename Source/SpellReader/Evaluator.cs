@@ -19,6 +19,11 @@ namespace Spell
 
         private object EvaluateExpression(BoundExpressionNode node) 
         {
+            if (node == null)
+            {
+                throw new NotSupportedException($"Node as type \"Null\" is not supported for evaluation.");
+            }
+
             if (node is BoundLiteralExpression n) 
             {
                 return n.Value;
@@ -65,7 +70,7 @@ namespace Spell
                 }
             }
 
-            throw new Exception($"Unexpected node {node.Kind}");
+            throw new NotSupportedException($"Node as \"{node.Type}\" is not supported for evaluation.");
         }
     }
 }

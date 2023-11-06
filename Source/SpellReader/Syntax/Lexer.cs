@@ -39,9 +39,10 @@ namespace Spell.Syntax
                 return new SyntaxToken(SyntaxKind.EndOfLineToken, _position, "\0", null);
             }
 
+            var start = _position;
+
             if (char.IsDigit(Current))
             {
-                var start = _position;
 
                 while (char.IsDigit(Current))
                 {
@@ -60,8 +61,6 @@ namespace Spell.Syntax
 
             if (char.IsWhiteSpace(Current))
             {
-                var start = _position;
-
                 while (char.IsWhiteSpace(Current))
                 {
                     Next();
@@ -74,8 +73,6 @@ namespace Spell.Syntax
 
             if (char.IsLetter(Current)) 
             {
-                var start = _position;
-
                 while (char.IsLetter(Current))
                 {
                     Next();
@@ -112,29 +109,34 @@ namespace Spell.Syntax
                 case '&':
                     if (Lookahead == '&') 
                     {
-                        operationToken = new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, _position += 2, "&&", null);
+                        _position += 2;
+                        operationToken = new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, start, "&&", null);
                     }
                     break;
                 case '|':
                     if (Lookahead == '|')
                     {
-                        operationToken = new SyntaxToken(SyntaxKind.PipePipeToken, _position += 2, "||", null);
+                        _position += 2;
+                        operationToken = new SyntaxToken(SyntaxKind.PipePipeToken, start, "||", null);
                     }
                     break;
                 case '=':
                     if (Lookahead == '=')
                     {
-                        operationToken = new SyntaxToken(SyntaxKind.EqualsEqualsToken, _position += 2, "==", null);
+                        _position += 2;
+                        operationToken = new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, "==", null);
                     }
                     break;
                 case '!':
                     if (Lookahead == '=')
                     {
-                        operationToken = new SyntaxToken(SyntaxKind.BangEqualsToken, _position += 2, "!=", null);
+                        _position += 2;
+                        operationToken = new SyntaxToken(SyntaxKind.BangEqualsToken, start, "!=", null);
                     }
                     else 
                     {
-                        operationToken = new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
+                        _position += 1;
+                        operationToken = new SyntaxToken(SyntaxKind.BangToken, start, "!", null);
                     }
                     break;
                 default:
