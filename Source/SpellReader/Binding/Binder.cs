@@ -10,19 +10,28 @@ namespace Spell.Binding
     {
         public BoundExpressionNode BindExpression(ExpressionSyntaxNode syntaxNode) 
         {
-            switch (syntaxNode.SyntaxKind) 
+            switch (syntaxNode.SyntaxKind)
             {
+                case SyntaxKind.ParenthesizedExpressionToken:
+                    return BindParenthesizedExpression(((ParenthesizedExpressionSytanxNode)syntaxNode));
                 case SyntaxKind.LiteralExpressionToken:
                     return BindLiteralExpression((LiteralExpressionSyntaxNode)syntaxNode);
+                case SyntaxKind.NameExpressionToken:
+                    return BindNameExpression((NameExpressionSyntaxNode)syntaxNode);
+                case SyntaxKind.AssignmentExpressionToken:
+                    return BindAssignmentExpression((AssignmentExpressionSyntaxNode)syntaxNode);
                 case SyntaxKind.UnaryExpressionToken:
                     return BindUnaryExpression((UnaryExpressionSyntax)syntaxNode);
                 case SyntaxKind.BinaryExpressionToken:
                     return BindBinaryExpression((BinaryExpressionSyntaxNode)syntaxNode);
-                case SyntaxKind.ParenthesizedExpressionToken:
-                    return BindExpression(((ParenthesizedExpressionSytanxNode)syntaxNode).Expression);
                 default:
                     throw new Exception($"Unexpected syntax {syntaxNode.SyntaxKind}");
             }
+        }
+
+        private BoundExpressionNode BindParenthesizedExpression(ParenthesizedExpressionSytanxNode sytanxNode)
+        {
+            return BindExpression(sytanxNode.Expression);
         }
 
         private BoundExpressionNode BindLiteralExpression(LiteralExpressionSyntaxNode syntax) 
@@ -33,6 +42,16 @@ namespace Spell.Binding
             }
 
             return new BoundLiteralExpression(syntax.Value);
+        }
+
+        private BoundExpressionNode BindNameExpression(NameExpressionSyntaxNode syntaxNode) 
+        {
+            throw new NotImplementedException();
+        }
+
+        private BoundExpressionNode BindAssignmentExpression(AssignmentExpressionSyntaxNode syntaxNode)
+        {
+            throw new NotImplementedException();
         }
 
         private BoundExpressionNode BindUnaryExpression(UnaryExpressionSyntax syntax)
@@ -61,5 +80,7 @@ namespace Spell.Binding
 
             return new BoundBinaryExpressionNode(boundLeft, boundOperator, boundRight);
         }
+
+
     }
 }

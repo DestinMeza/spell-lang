@@ -126,6 +126,11 @@ namespace Spell.Syntax
                         _position += 2;
                         operationToken = new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, "==", null);
                     }
+                    else 
+                    {
+                        _position += 1;
+                        operationToken = new SyntaxToken(SyntaxKind.EqualsToken, start, "=", null);
+                    }
                     break;
                 case '!':
                     if (Lookahead == '=')

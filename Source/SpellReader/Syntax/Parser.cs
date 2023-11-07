@@ -91,14 +91,35 @@ namespace Spell.Syntax
             return new SyntaxTree(expression, endOfFileToken);
         }
 
-        private ExpressionSyntaxNode ParseExpression(int parentPrecedence = 0)
+        private ExpressionSyntaxNode ParseExpression() 
+        {
+            return ParseAssignmentExpression();
+        }
+
+        //TODO implement Statements. Statement will be the proper way to handle this "assignment" logic.
+        //Uses a Right to Left tree reading model instead of a left to right.
+        private ExpressionSyntaxNode ParseAssignmentExpression() 
+        {
+            if (GetTokenAtOffset(0).SyntaxKind == SyntaxKind.IdentifierToken &&
+               GetTokenAtOffset(1).SyntaxKind == SyntaxKind.EqualsToken) 
+            {
+                var identiferToken = NextToken();
+                var operatorToken = NextToken();
+                var right = ParseAssignmentExpression();
+                return new AssignmentExpressionSyntaxNode(identiferToken, operatorToken, right);
+            }
+
+            return ParseBinaryExpression();
+        }
+
+        private ExpressionSyntaxNode ParseBinaryExpression(int parentPrecedence = 0)
         {
             ExpressionSyntaxNode left;
             var unaryOperatorPrecdence = CurrentSyntaxToken.SyntaxKind.GetUnaryOperatorPrecedence();
             if (unaryOperatorPrecdence != 0 && unaryOperatorPrecdence >= parentPrecedence)
             {
                 var operatorToken = NextToken();
-                var operand = ParseExpression(unaryOperatorPrecdence);
+                var operand = ParseBinaryExpression(unaryOperatorPrecdence);
                 left = new UnaryExpressionSyntax(operatorToken, operand);
             }
             else 
@@ -115,7 +136,7 @@ namespace Spell.Syntax
                 }
 
                 var operatorToken = NextToken();
-                var right = ParseExpression(precedence);
+                var right = ParseBinaryExpression(precedence);
                 left = new BinaryExpressionSyntaxNode(left, operatorToken, right);
             }
 
@@ -133,7 +154,7 @@ namespace Spell.Syntax
                     Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.OpenParenthesisToken}>");
                 }
 
-                var expression = ParseExpression();
+                var expression = ParseBinaryExpression();
 
                 var rightToken = MatchCurrentIncrement(SyntaxKind.CloseParenthesisToken);
 
@@ -164,12 +185,19 @@ namespace Spell.Syntax
                 return new LiteralExpressionSyntaxNode(numberToken);
             }
 
+            NameExpressionSyntaxNode ParseNameExpressionSyntax() 
+            {
+                var identifierToken = NextToken();
+                return new NameExpressionSyntaxNode(identifierToken);
+            }
+
             switch (CurrentSyntaxToken.SyntaxKind)
             {
                 case SyntaxKind.NumberToken: return ParseNumberExpression();
                 case SyntaxKind.OpenParenthesisToken: return ParseParenthesizedExpression();
                 case SyntaxKind.FalseKeyword: return ParseTrueOrFalseKeyword();
                 case SyntaxKind.TrueKeyword: return ParseTrueOrFalseKeyword();
+                case SyntaxKind.IdentifierToken: return ParseNameExpressionSyntax();
                 default: throw new NotSupportedException();
             };
         }

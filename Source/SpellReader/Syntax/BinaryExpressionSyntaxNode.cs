@@ -2,6 +2,7 @@
 
 namespace Spell.Syntax
 {
+
     internal sealed class BinaryExpressionSyntaxNode : ExpressionSyntaxNode
     {
         public override SyntaxKind SyntaxKind => SyntaxKind.BinaryExpressionToken;

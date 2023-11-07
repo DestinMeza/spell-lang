@@ -14,6 +14,7 @@
         SlashToken,
         OpenParenthesisToken,
         CloseParenthesisToken,
+        EqualsToken,
         EqualsEqualsToken,
         BangEqualsToken,
         AmpersandAmpersandToken,
@@ -30,6 +31,8 @@
         UnaryExpressionToken,
         BinaryExpressionToken,
         ParenthesizedExpressionToken,
+        NameExpressionToken,
+        AssignmentExpressionToken,
     }
 
     internal static class SyntaxFacts 
