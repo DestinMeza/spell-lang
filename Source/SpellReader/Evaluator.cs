@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Spell.Binding;
+using Spell.Syntax;
 
 namespace Spell
 {
@@ -7,9 +9,11 @@ namespace Spell
     internal sealed class Evaluator 
     {
         private readonly BoundExpressionNode _root;
-        public Evaluator(BoundExpressionNode root) 
+        private readonly Dictionary<VariableSymbol, object> _variables;
+        public Evaluator(BoundExpressionNode root, Dictionary<VariableSymbol, object> variables) 
         {
             _root = root;
+            _variables = variables;
         }
 
         public object Evaluate() 
@@ -28,6 +32,19 @@ namespace Spell
             {
                 return n.Value;
             }
+
+            if (node is BoundAssignmentExpressionNode a) 
+            {
+                var value = EvaluateExpression(a.Expression);
+                _variables[a.VariableSymbol] = value;
+                return value;
+            }
+
+            if (node is BoundVariableExpressionNode v) 
+            {
+                return _variables[v.VariableSymbol];
+            }
+
             if (node is BoundUnaryExpressionNode u) 
             {
                 var operand = EvaluateExpression(u.Operand);

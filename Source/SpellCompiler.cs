@@ -7,6 +7,7 @@ using Spell.Syntax;
 using Spell.IO;
 using Spell.Async.Tasks;
 using Spell.Async;
+using System.Collections.Generic;
 
 namespace Spell
 {
@@ -16,6 +17,13 @@ namespace Spell
     /// </summary>
     public class SpellCompiler
     {
+        private Dictionary<VariableSymbol, object> variables;
+
+        public SpellCompiler() 
+        {
+            variables = new Dictionary<VariableSymbol, object>();
+        }
+
         #region Async
 
         public void ReadAsync(string sourceCode, CancellationToken ct, Action<TaskResult> callback = null)
@@ -53,16 +61,14 @@ namespace Spell
                 SyntaxTree syntaxTree = parser.Parse();
 
                 Diagnostics.LogMessage(GetTreeView(syntaxTree.Root));
+                Compilation complation = new Compilation(syntaxTree);
 
-                Binder binder = new Binder();
-                BoundExpressionNode boundNode = binder.BindExpression(syntaxTree.Root);
-                Evaluator evaluator = new Evaluator(boundNode);
+                var evaluationResult = complation.Evaluate(variables);
 
-                result.Result = evaluator.Evaluate();
-
-                //TODO add async Parsing. For now this is Testing for Async system
-
+                Diagnostics.LogMessage($"Value: {evaluationResult.Value}");
                 Diagnostics.LogMessage("End Of File Reached");
+
+                result.Result = evaluationResult;
             }
             catch (Exception e)
             {
@@ -91,11 +97,10 @@ namespace Spell
 
                 Diagnostics.LogMessage(GetTreeView(syntaxTree.Root));
 
-                Binder binder = new Binder();
-                BoundExpressionNode boundNode = binder.BindExpression(syntaxTree.Root);
-                Evaluator evaluator = new Evaluator(boundNode);
+                Compilation complation = new Compilation(syntaxTree);
+                var result = complation.Evaluate(variables);
 
-                Diagnostics.LogMessage($"Value: {evaluator.Evaluate()}");
+                Diagnostics.LogMessage($"Value: {result.Value}");
                 Diagnostics.LogMessage("End Of File Reached");
             }
             catch (Exception e)

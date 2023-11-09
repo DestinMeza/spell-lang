@@ -2,12 +2,19 @@ using Spell.Syntax;
 using System;
 using System.Collections.Generic;
 using Spell;
+using System.Linq;
 
 namespace Spell.Binding
 {
 
     internal sealed class Binder 
     {
+        private readonly Dictionary<VariableSymbol, object> _variables;
+        public Binder(Dictionary<VariableSymbol, object> variables) 
+        {
+            _variables = variables;
+        }
+
         public BoundExpressionNode BindExpression(ExpressionSyntaxNode syntaxNode) 
         {
             switch (syntaxNode.SyntaxKind)
@@ -46,12 +53,34 @@ namespace Spell.Binding
 
         private BoundExpressionNode BindNameExpression(NameExpressionSyntaxNode syntaxNode) 
         {
-            throw new NotImplementedException();
+            var name = syntaxNode.IdentifierToken.Text;
+
+            var variableSymbol = _variables.Keys.FirstOrDefault(v => v.Name == name);
+
+            if (variableSymbol == null)
+            {
+                Diagnostics.LogErrorMessage($"Error: Unidentified Name \"{name}\" :{syntaxNode.IdentifierToken.Span}");
+            }
+
+            return new BoundVariableExpressionNode(variableSymbol);
         }
 
         private BoundExpressionNode BindAssignmentExpression(AssignmentExpressionSyntaxNode syntaxNode)
         {
-            throw new NotImplementedException();
+            var name = syntaxNode.IdentifierToken.Text;
+            var boundExpression = BindExpression(syntaxNode.ExpressionSyntaxNode);
+
+            var existingVariable = _variables.Keys.FirstOrDefault(v => v.Name == name);
+
+            if (existingVariable != null) 
+            {
+                _variables.Remove(existingVariable);
+            }
+
+            var variable = new VariableSymbol(name, boundExpression.Type);
+            _variables[variable] = null;
+
+            return new BoundAssignmentExpressionNode(variable, boundExpression);
         }
 
         private BoundExpressionNode BindUnaryExpression(UnaryExpressionSyntax syntax)
