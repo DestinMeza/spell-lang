@@ -36,7 +36,7 @@ namespace Spell.Syntax
 
             if (_position >= _text.Length)
             {
-                return new SyntaxToken(SyntaxKind.EndOfLineToken, _position, "\0", null);
+                return new SyntaxToken(SyntaxKind.EndOfFileToken, _position, "\0", null);
             }
 
             var start = _position;

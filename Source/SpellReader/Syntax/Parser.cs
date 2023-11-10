@@ -32,7 +32,7 @@ namespace Spell.Syntax
                         tokens.Add(token);
                         break;
                 }
-            } while (token.SyntaxKind != SyntaxKind.EndOfLineToken);
+            } while (token.SyntaxKind != SyntaxKind.EndOfFileToken);
 
             _tokens = tokens.ToArray();
         }
@@ -86,7 +86,7 @@ namespace Spell.Syntax
         public SyntaxTree Parse()
         {
             var expression = ParseExpression();
-            var endOfFileToken = StrictMatch(SyntaxKind.EndOfLineToken);
+            var endOfFileToken = StrictMatch(SyntaxKind.EndOfFileToken);
 
             return new SyntaxTree(expression, endOfFileToken);
         }
@@ -154,7 +154,7 @@ namespace Spell.Syntax
                     Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.OpenParenthesisToken}>");
                 }
 
-                var expression = ParseBinaryExpression();
+                var expression = ParseExpression();
 
                 var rightToken = MatchCurrentIncrement(SyntaxKind.CloseParenthesisToken);
 

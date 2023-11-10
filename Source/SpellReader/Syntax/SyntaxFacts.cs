@@ -3,7 +3,7 @@
     public enum SyntaxKind
     {
         BadToken,
-        EndOfLineToken,
+        EndOfFileToken,
         NullToken,
 
         WhitespaceToken,
