@@ -5,7 +5,7 @@ namespace Spell.Syntax
     internal sealed class ParenthesizedExpressionSytanxNode : ExpressionSyntaxNode 
     {
         public override SyntaxKind SyntaxKind => SyntaxKind.ParenthesizedExpressionToken;
-
+        public override string Text { get => $"{OpenParenthesisToken.Text} {Expression.Text} {CloseParenthesisToken.Text}"; set { } }
         public SyntaxToken OpenParenthesisToken { get; set; }
         public ExpressionSyntaxNode Expression { get; set; }
         public SyntaxToken CloseParenthesisToken { get; set; }

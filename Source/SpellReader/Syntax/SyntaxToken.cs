@@ -7,7 +7,7 @@ namespace Spell.Syntax
     {
         public SyntaxKind SyntaxKind { get; private set; }
         public int Position { get; private set; }
-        public string Text { get; private set; }
+        public string Text { get; set; }
         public object Value { get; private set; }
         public TextSpan Span => new TextSpan(Position, Text.Length);
 

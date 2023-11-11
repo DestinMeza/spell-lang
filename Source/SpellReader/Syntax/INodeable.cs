@@ -7,6 +7,7 @@ namespace Spell.Syntax
     /// </summary>
     public interface INodeable 
     {
+        string Text { get; set; }
         SyntaxKind SyntaxKind { get; }
         IEnumerable<INodeable> GetChildren();
     }

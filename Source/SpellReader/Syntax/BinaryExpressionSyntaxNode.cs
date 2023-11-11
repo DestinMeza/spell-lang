@@ -6,6 +6,7 @@ namespace Spell.Syntax
     internal sealed class BinaryExpressionSyntaxNode : ExpressionSyntaxNode
     {
         public override SyntaxKind SyntaxKind => SyntaxKind.BinaryExpressionToken;
+        public override string Text { get => $"{LeftNode.Text} {OperatorToken.Text} {RightNode.Text}"; set { } }
 
         public ExpressionSyntaxNode LeftNode { get; }
         public SyntaxToken OperatorToken { get; }

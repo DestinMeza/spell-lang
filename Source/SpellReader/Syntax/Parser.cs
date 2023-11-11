@@ -130,7 +130,7 @@ namespace Spell.Syntax
             while (true)
             {
                 var precedence = CurrentSyntaxToken.SyntaxKind.GetBinaryOperatorPrecedence();
-                if (precedence == 0 || precedence < parentPrecedence)
+                if (precedence == 0 || precedence <= parentPrecedence)
                 {
                     break;
                 }

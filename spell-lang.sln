@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "spell-lang", "spell-lang.csproj", "{316263B6-80F8-4087-A113-132894C25CD6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "spell-lang-tester", "..\..\spell-lang-tester\spell-lang-tester\spell-lang-tester.csproj", "{872FF0C8-0F27-45D8-A52E-E8EAFA6B0D18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{316263B6-80F8-4087-A113-132894C25CD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{316263B6-80F8-4087-A113-132894C25CD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{316263B6-80F8-4087-A113-132894C25CD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{872FF0C8-0F27-45D8-A52E-E8EAFA6B0D18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{872FF0C8-0F27-45D8-A52E-E8EAFA6B0D18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{872FF0C8-0F27-45D8-A52E-E8EAFA6B0D18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{872FF0C8-0F27-45D8-A52E-E8EAFA6B0D18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
