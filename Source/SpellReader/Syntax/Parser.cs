@@ -69,7 +69,7 @@ namespace Spell.Syntax
                 return NextToken();
             }
 
-            Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{syntaxKind}>");
+            Diagnostics.LogErrorMessage($"Error: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{syntaxKind}>");
 
             return new SyntaxToken(syntaxKind, CurrentSyntaxToken.Position, null, null);
         }
@@ -154,7 +154,7 @@ namespace Spell.Syntax
                 case SyntaxKind.TrueKeyword:            return ParseBooleanLiteral();
                 case SyntaxKind.IdentifierToken:        return ParseNameExpression();
                 default:
-                    Diagnostics.LogErrorMessage($"ERROR: Unexpected SyntaxKind <{CurrentSyntaxToken.SyntaxKind}>, the following is not parsable.");
+                    Diagnostics.LogErrorMessage($"Error: Unexpected SyntaxKind <{CurrentSyntaxToken.SyntaxKind}>, the following is not parsable.");
                     return null;
             };
         }
@@ -165,7 +165,7 @@ namespace Spell.Syntax
 
             if (string.IsNullOrEmpty(numberToken.Text) || numberToken.Value == null)
             {
-                Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.NumberToken}>");
+                Diagnostics.LogErrorMessage($"Error: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.NumberToken}>");
             }
 
             return new LiteralExpressionSyntaxNode(numberToken);
@@ -177,7 +177,7 @@ namespace Spell.Syntax
 
             if (string.IsNullOrEmpty(leftToken.Text))
             {
-                Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.OpenParenthesisToken}>");
+                Diagnostics.LogErrorMessage($"Error: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.OpenParenthesisToken}>");
             }
 
             var expression = ParseExpression();
@@ -186,7 +186,7 @@ namespace Spell.Syntax
 
             if (string.IsNullOrEmpty(rightToken.Text))
             {
-                Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.CloseParenthesisToken}>");
+                Diagnostics.LogErrorMessage($"Error: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.CloseParenthesisToken}>");
             }
 
             return new ParenthesizedExpressionSytanxNode(leftToken, expression, rightToken);

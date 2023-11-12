@@ -63,6 +63,8 @@ namespace Spell
 
                 Compilation complation = new Compilation(syntaxTree);
 
+                Diagnostics.LogMessage(syntaxTree.Root.ToString());
+
                 var evaluationResult = complation.Evaluate(variables);
 
                 result.Result = evaluationResult;

@@ -123,7 +123,7 @@ namespace Spell.Syntax
                     }
                     else 
                     {
-                        Diagnostics.LogErrorMessage($"ERROR: bad character input: '{Current}'");
+                        Diagnostics.LogErrorMessage($"Error: bad character input: '{Current}'");
                         _position++;
                     }
                     break;
@@ -160,7 +160,7 @@ namespace Spell.Syntax
             var text = _text.ToString(_start, length);
             if (!int.TryParse(text, out int value))
             {
-                Diagnostics.LogErrorMessage($"The number {text} isn't valid Int32.");
+                Diagnostics.LogErrorMessage($"Error: The number {text} isn't a valid Int32.");
             }
 
             _value = value;
