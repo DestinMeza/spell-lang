@@ -6,7 +6,7 @@ namespace Spell.Syntax
 {
     internal sealed class Lexer
     {
-        private readonly string _text;
+        private readonly SourceText _text;
 
         private SyntaxKind _syntaxKind;
 
@@ -14,7 +14,7 @@ namespace Spell.Syntax
         private int _start;
         private object _value;
 
-        public Lexer(string text)
+        public Lexer(SourceText text)
         {
             _text = text;
         }
@@ -115,7 +115,7 @@ namespace Spell.Syntax
                 default:
                     if (char.IsLetter(Current))
                     {
-                        ReadIdentiferOrKeyworod();
+                        ReadIdentiferOrKeyword();
                     }
                     else if (char.IsWhiteSpace(Current))
                     {
@@ -133,7 +133,7 @@ namespace Spell.Syntax
             var text = SyntaxFacts.GetText(_syntaxKind);
             if (text == null) 
             {
-                text = _text.Substring(_start, length);
+                text = _text.ToString(_start, length);
             }
 
             return new SyntaxToken(_syntaxKind, _start, text, _value);
@@ -157,17 +157,17 @@ namespace Spell.Syntax
             }
 
             var length = _position - _start;
-            var text = _text.Substring(_start, length);
+            var text = _text.ToString(_start, length);
             if (!int.TryParse(text, out int value))
             {
-                Diagnostics.LogErrorMessage($"The number {_text} isn't valid Int32.");
+                Diagnostics.LogErrorMessage($"The number {text} isn't valid Int32.");
             }
 
             _value = value;
             _syntaxKind = SyntaxKind.NumberToken;
         }
 
-        private void ReadIdentiferOrKeyworod()
+        private void ReadIdentiferOrKeyword()
         {
             while (char.IsLetter(Current))
             {
@@ -175,7 +175,7 @@ namespace Spell.Syntax
             }
 
             var length = _position - _start;
-            var text = _text.Substring(_start, length);
+            var text = _text.ToString(_start, length);
             _syntaxKind = SyntaxFacts.GetKeywordKind(text);
         }
     }

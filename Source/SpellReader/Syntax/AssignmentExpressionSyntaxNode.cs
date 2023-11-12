@@ -4,7 +4,7 @@ namespace Spell.Syntax
 {
     internal sealed class AssignmentExpressionSyntaxNode : ExpressionSyntaxNode
     {
-        public override SyntaxKind SyntaxKind => SyntaxKind.AssignmentExpressionToken;
+        public override SyntaxKind SyntaxKind => SyntaxKind.AssignmentExpression;
         public override string Text { get => $"{IdentifierToken.Text} {EqualsToken.Text} {ExpressionSyntaxNode.Text}"; set { } }
         public SyntaxToken IdentifierToken { get; }
         public SyntaxToken EqualsToken { get; }
@@ -16,13 +16,6 @@ namespace Spell.Syntax
             IdentifierToken = identifierToken;
             EqualsToken = equalsToken;
             ExpressionSyntaxNode = expressionSyntaxNode;
-        }
-
-        public override IEnumerable<INodeable> GetChildren()
-        {
-            yield return IdentifierToken;
-            yield return EqualsToken;
-            yield return ExpressionSyntaxNode;
         }
     }
 }

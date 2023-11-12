@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Spell.Syntax
 {
@@ -9,6 +10,7 @@ namespace Spell.Syntax
     {
         string Text { get; set; }
         SyntaxKind SyntaxKind { get; }
+        TextSpan Span { get; }
         IEnumerable<INodeable> GetChildren();
     }
 }

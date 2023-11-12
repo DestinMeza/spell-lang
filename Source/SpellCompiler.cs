@@ -8,6 +8,7 @@ using Spell.IO;
 using Spell.Async.Tasks;
 using Spell.Async;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Spell
 {
@@ -44,35 +45,31 @@ namespace Spell
             task.RunAsync();
         }
 
-        internal async Task<TaskResult> ReadSourceCode(string sourceCode, TaskResult result)
+        internal async Task<TaskResult> ReadSourceCode(string sourceText, TaskResult result)
         {
-            Diagnostics.LogMessage("-----Reading File------");
-
             try
             {
-                if (string.IsNullOrWhiteSpace(sourceCode))
+                if (string.IsNullOrWhiteSpace(sourceText))
                 {
                     Diagnostics.LogErrorMessage("Error: Empty Source Code");
                     result.Result = null;
                     return result;
                 }
 
+                SourceText sourceCode = SourceText.From(sourceText);
+
                 Parser parser = new Parser(sourceCode);
                 SyntaxTree syntaxTree = parser.Parse();
 
-                Diagnostics.LogMessage(GetTreeView(syntaxTree.Root));
                 Compilation complation = new Compilation(syntaxTree);
 
                 var evaluationResult = complation.Evaluate(variables);
-
-                Diagnostics.LogMessage($"Value: {evaluationResult.Value}");
-                Diagnostics.LogMessage("End Of File Reached");
 
                 result.Result = evaluationResult;
             }
             catch (Exception e)
             {
-                Diagnostics.LogErrorMessage($"Error in Compiler: {e}");
+                Diagnostics.LogErrorMessage($"Error: {e.Message}");
             }
 
             return result;
@@ -80,64 +77,37 @@ namespace Spell
 
         #endregion
 
-        public void Read(string sourceCode)
+        public void Read(string sourceText)
         {
             Diagnostics.LogMessage("-----Reading File------");
 
             try
             {
-                if (string.IsNullOrWhiteSpace(sourceCode))
+                if (string.IsNullOrWhiteSpace(sourceText))
                 {
                     Diagnostics.LogErrorMessage("Error: Empty Source Code");
                     return;
                 }
 
+                SourceText sourceCode = SourceText.From(sourceText);
+
                 Parser parser = new Parser(sourceCode);
                 SyntaxTree syntaxTree = parser.Parse();
 
-                Diagnostics.LogMessage(GetTreeView(syntaxTree.Root));
+                Diagnostics.LogMessage(syntaxTree.Root.ToString());
 
                 Compilation complation = new Compilation(syntaxTree);
                 var result = complation.Evaluate(variables);
 
-                Diagnostics.LogMessage($"Value: {result.Value}");
-                Diagnostics.LogMessage("End Of File Reached");
+                if (result.Value != null) 
+                {
+                    Diagnostics.LogMessage($"Result: {result.Value}");
+                }
             }
             catch (Exception e)
             {
-                Diagnostics.LogErrorMessage($"Error in Compiler: {e} {e.Source}");
+                Diagnostics.LogErrorMessage($"Error: {e.Message}");
             }
-        }
-
-        private string GetTreeView(INodeable node, int depth = 0, bool isLast = true)
-        {
-            string indent = isLast ? "-------" : "│-----";
-            string localIndent = "";
-
-            for (int i = 0; i < depth; i++)
-            {
-                localIndent += indent;
-            }
-
-            string branchVisual = isLast ? "└──" : "├──";
-
-            string outputString = $"{localIndent}{branchVisual}{node.SyntaxKind}";
-
-            if (node is SyntaxToken t && t.Value != null)
-            {
-                return outputString += $"\n{localIndent}{localIndent}{branchVisual} Value:{t.Value}";
-            }
-
-            string childrenStrings = "";
-
-            var lastNode = node.GetChildren().LastOrDefault();
-
-            foreach (var child in node.GetChildren())
-            {
-                childrenStrings += $"\n{localIndent}{GetTreeView(child, depth + 1, child == lastNode)}";
-            }
-
-            return outputString + childrenStrings;
         }
     }
 }

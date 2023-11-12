@@ -32,8 +32,6 @@ namespace Spell
         private static Diagnostics instance;
 
         protected EDebugType debugType;
-
-        public Log[] logs => Logs.ToArray();
         protected List<Log> Logs { get; set; }
 
         public Diagnostics(EDebugType _debugType = EDebugType.Default)
@@ -104,9 +102,9 @@ namespace Spell
             return Instance.debugType;
         }
 
-        public static IReadOnlyList<Log> GetLogs()
+        public static Log[] GetLogs()
         {
-            return Instance.Logs;
+            return instance.Logs.ToArray();
         }
 
         public static void ClearLogs() 

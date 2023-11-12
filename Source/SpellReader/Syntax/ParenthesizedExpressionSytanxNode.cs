@@ -4,7 +4,7 @@ namespace Spell.Syntax
 {
     internal sealed class ParenthesizedExpressionSytanxNode : ExpressionSyntaxNode 
     {
-        public override SyntaxKind SyntaxKind => SyntaxKind.ParenthesizedExpressionToken;
+        public override SyntaxKind SyntaxKind => SyntaxKind.ParenthesizedExpression;
         public override string Text { get => $"{OpenParenthesisToken.Text} {Expression.Text} {CloseParenthesisToken.Text}"; set { } }
         public SyntaxToken OpenParenthesisToken { get; set; }
         public ExpressionSyntaxNode Expression { get; set; }
@@ -15,13 +15,6 @@ namespace Spell.Syntax
             OpenParenthesisToken = openParenthesisToken;
             Expression = expression;
             CloseParenthesisToken = closeParenthesisToken;
-        }
-
-        public override IEnumerable<INodeable> GetChildren()
-        {
-            yield return OpenParenthesisToken;
-            yield return Expression;
-            yield return CloseParenthesisToken;
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Spell.Syntax
 {
     internal sealed class LiteralExpressionSyntaxNode : ExpressionSyntaxNode
     {
-        public override SyntaxKind SyntaxKind => SyntaxKind.LiteralExpressionToken;
+        public override SyntaxKind SyntaxKind => SyntaxKind.LiteralExpression;
         public override string Text { get => $"{LiteralToken.Text}"; set { } }
         public SyntaxToken LiteralToken { get; }
         public object Value { get; }
@@ -18,11 +18,6 @@ namespace Spell.Syntax
             : this(literalToken, literalToken.Value)
         {
             
-        }
-
-        public override IEnumerable<INodeable> GetChildren()
-        {
-            yield return LiteralToken;
         }
     }
 }

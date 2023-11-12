@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using Spell.Binding;
 using Spell.Syntax;
 
@@ -23,71 +24,77 @@ namespace Spell
 
         private object EvaluateExpression(BoundExpressionNode node) 
         {
-            if (node == null)
+
+            switch (node.Kind)
             {
-                throw new NotSupportedException($"Node as type \"Null\" is not supported for evaluation.");
+                case BoundNodeKind.LiteralExpression: return EvaluateLiteralExpression((BoundLiteralExpression)node);
+                case BoundNodeKind.UnaryExpression: return EvaluateUnaryExpression((BoundUnaryExpressionNode)node);
+                case BoundNodeKind.BinaryExpression: return EvaluateBinaryExpression((BoundBinaryExpressionNode)node);
+                case BoundNodeKind.VariableExpression: return EvaluateVariableExpression((BoundVariableExpressionNode)node);
+                case BoundNodeKind.AssignmentExpression:    return EvaluateAssignmentExpression((BoundAssignmentExpressionNode)node);
+                default:
+                    throw new NotSupportedException($"Node as \"{node.Type}\" is not supported for evaluation.");
             }
+        }
 
-            if (node is BoundLiteralExpression n) 
+        private static object EvaluateLiteralExpression(BoundLiteralExpression n)
+        {
+            return n.Value;
+        }
+
+        private object EvaluateUnaryExpression(BoundUnaryExpressionNode u)
+        {
+            var operand = EvaluateExpression(u.Operand);
+
+            switch (u.BoundOperator.Kind)
             {
-                return n.Value;
+                case BoundUnaryOperatorKind.Identity:
+                    return (int)operand;
+                case BoundUnaryOperatorKind.Negation:
+                    return -(int)operand;
+                case BoundUnaryOperatorKind.LogicalNegation:
+                    return !(bool)operand;
+                default: throw new Exception($"Unexpected unary operator {u.BoundOperator.Kind}");
             }
+        }
 
-            if (node is BoundAssignmentExpressionNode a) 
+        private object EvaluateBinaryExpression(BoundBinaryExpressionNode b)
+        {
+            var left = EvaluateExpression(b.Left);
+            var right = EvaluateExpression(b.Right);
+
+            switch (b.BoundOperator.Kind)
             {
-                var value = EvaluateExpression(a.Expression);
-                _variables[a.VariableSymbol] = value;
-                return value;
+                case BoundBinaryOperatorKind.Addition:
+                    return (int)left + (int)right;
+                case BoundBinaryOperatorKind.Subtraction:
+                    return (int)left - (int)right;
+                case BoundBinaryOperatorKind.Multiplication:
+                    return (int)left * (int)right;
+                case BoundBinaryOperatorKind.Division:
+                    return (int)left / (int)right;
+                case BoundBinaryOperatorKind.LogicalAnd:
+                    return (bool)left && (bool)right;
+                case BoundBinaryOperatorKind.LogicalOr:
+                    return (bool)left || (bool)right;
+                case BoundBinaryOperatorKind.Equals:
+                    return Equals(left, right);
+                case BoundBinaryOperatorKind.NotEquals:
+                    return !Equals(left, right);
+                default: throw new Exception($"Unexpected binary operator {b.BoundOperator.Kind}");
             }
+        }
 
-            if (node is BoundVariableExpressionNode v) 
-            {
-                return _variables[v.VariableSymbol];
-            }
+        private object EvaluateVariableExpression(BoundVariableExpressionNode v)
+        {
+            return _variables[v.VariableSymbol];
+        }
 
-            if (node is BoundUnaryExpressionNode u) 
-            {
-                var operand = EvaluateExpression(u.Operand);
-
-                switch (u.BoundOperator.Kind) 
-                {
-                    case BoundUnaryOperatorKind.Identity:
-                        return (int) operand;
-                    case BoundUnaryOperatorKind.Negation:
-                        return -(int) operand;
-                    case BoundUnaryOperatorKind.LogicalNegation:
-                        return !(bool) operand;
-                    default: throw new Exception($"Unexpected unary operator {u.BoundOperator.Kind}");
-                }
-            }
-            if (node is BoundBinaryExpressionNode b) 
-            {
-                var left = EvaluateExpression(b.Left);
-                var right = EvaluateExpression(b.Right);
-
-                switch (b.BoundOperator.Kind) 
-                {
-                    case BoundBinaryOperatorKind.Addition:
-                        return (int) left + (int) right;
-                    case BoundBinaryOperatorKind.Subtraction:
-                        return (int) left - (int) right;
-                    case BoundBinaryOperatorKind.Multiplication:
-                        return (int) left * (int) right;
-                    case BoundBinaryOperatorKind.Division:
-                        return (int) left / (int) right;
-                    case BoundBinaryOperatorKind.LogicalAnd:
-                        return (bool)left && (bool)right;
-                    case BoundBinaryOperatorKind.LogicalOr:
-                        return (bool)left || (bool)right;
-                    case BoundBinaryOperatorKind.Equals:
-                        return Equals(left, right);
-                    case BoundBinaryOperatorKind.NotEquals:
-                        return !Equals(left, right);
-                    default : throw new Exception($"Unexpected binary operator {b.BoundOperator.Kind}");
-                }
-            }
-
-            throw new NotSupportedException($"Node as \"{node.Type}\" is not supported for evaluation.");
+        private object EvaluateAssignmentExpression(BoundAssignmentExpressionNode a)
+        {
+            var value = EvaluateExpression(a.Expression);
+            _variables[a.VariableSymbol] = value;
+            return value;
         }
     }
 }

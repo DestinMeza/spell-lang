@@ -20,9 +20,7 @@ namespace Spell
             var binder = new Binder(variables);
             var boundExpression = binder.BindExpression(SyntaxTree.Root);
 
-            var fromActualLogs = Diagnostics.GetLogs();
-
-            var diagnostics = new List<Log>(fromActualLogs);
+            var diagnostics = Diagnostics.GetLogs();
 
             if (diagnostics.Any(x => x.ELogType == ELogType.Error)) 
             {

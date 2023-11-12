@@ -5,11 +5,11 @@ namespace Spell
 {
     public sealed class EvaluationResult
     {
-        public IReadOnlyList<string> Diagnostics { get; }
+        public List<string> Diagnostics { get; }
         public object Value { get; }
-        public EvaluationResult(IEnumerable<Log> diagnostics, object value) 
+        public EvaluationResult(Log[] diagnostics, object value) 
         {
-            Diagnostics = diagnostics.Select(x => x.Message()).ToArray();
+            Diagnostics = diagnostics.Select(x => x.Message()).ToList();
             Value = value;
         }
     }

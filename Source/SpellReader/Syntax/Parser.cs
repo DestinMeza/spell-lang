@@ -8,11 +8,11 @@ namespace Spell.Syntax
     {
         private SyntaxToken CurrentSyntaxToken => GetTokenAtOffset(0);
 
+        private readonly SourceText _text;
         private readonly SyntaxToken[] _tokens;
-
         private int _position;
 
-        public Parser(string text)
+        public Parser(SourceText text)
         {
             var tokens = new List<SyntaxToken>();
 
@@ -34,6 +34,7 @@ namespace Spell.Syntax
                 }
             } while (token.SyntaxKind != SyntaxKind.EndOfFileToken);
 
+            _text = text;
             _tokens = tokens.ToArray();
         }
 
@@ -88,7 +89,7 @@ namespace Spell.Syntax
             var expression = ParseExpression();
             var endOfFileToken = StrictMatch(SyntaxKind.EndOfFileToken);
 
-            return new SyntaxTree(expression, endOfFileToken);
+            return new SyntaxTree(_text, expression, endOfFileToken);
         }
 
         private ExpressionSyntaxNode ParseExpression() 
@@ -145,61 +146,63 @@ namespace Spell.Syntax
 
         private ExpressionSyntaxNode ParsePrimaryExpression()
         {
-            ParenthesizedExpressionSytanxNode ParseParenthesizedExpression()
-            {
-                var leftToken = MatchCurrentIncrement(SyntaxKind.OpenParenthesisToken);
-
-                if (string.IsNullOrEmpty(leftToken.Text))
-                {
-                    Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.OpenParenthesisToken}>");
-                }
-
-                var expression = ParseExpression();
-
-                var rightToken = MatchCurrentIncrement(SyntaxKind.CloseParenthesisToken);
-
-                if (string.IsNullOrEmpty(rightToken.Text))
-                {
-                    Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.CloseParenthesisToken}>");
-                }
-
-                return new ParenthesizedExpressionSytanxNode(leftToken, expression, rightToken);
-            }
-
-            LiteralExpressionSyntaxNode ParseTrueOrFalseKeyword() 
-            {
-                var keywordToken = NextToken();
-                var value = keywordToken.SyntaxKind == SyntaxKind.TrueKeyword;
-                return new LiteralExpressionSyntaxNode(keywordToken, value);
-            }
-
-            LiteralExpressionSyntaxNode ParseNumberExpression()
-            {
-                var numberToken = MatchCurrentIncrement(SyntaxKind.NumberToken);
-
-                if (string.IsNullOrEmpty(numberToken.Text) || numberToken.Value == null)
-                {
-                    Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.NumberToken}>");
-                }
-
-                return new LiteralExpressionSyntaxNode(numberToken);
-            }
-
-            NameExpressionSyntaxNode ParseNameExpressionSyntax() 
-            {
-                var identifierToken = NextToken();
-                return new NameExpressionSyntaxNode(identifierToken);
-            }
-
             switch (CurrentSyntaxToken.SyntaxKind)
             {
-                case SyntaxKind.NumberToken: return ParseNumberExpression();
-                case SyntaxKind.OpenParenthesisToken: return ParseParenthesizedExpression();
-                case SyntaxKind.FalseKeyword: return ParseTrueOrFalseKeyword();
-                case SyntaxKind.TrueKeyword: return ParseTrueOrFalseKeyword();
-                case SyntaxKind.IdentifierToken: return ParseNameExpressionSyntax();
-                default: throw new NotSupportedException();
+                case SyntaxKind.NumberToken:            return ParseNumberExpression();
+                case SyntaxKind.OpenParenthesisToken:   return ParseParenthesizedExpression();
+                case SyntaxKind.FalseKeyword:           return ParseBooleanLiteral();
+                case SyntaxKind.TrueKeyword:            return ParseBooleanLiteral();
+                case SyntaxKind.IdentifierToken:        return ParseNameExpression();
+                default:
+                    Diagnostics.LogErrorMessage($"ERROR: Unexpected SyntaxKind <{CurrentSyntaxToken.SyntaxKind}>, the following is not parsable.");
+                    return null;
             };
+        }
+
+        private LiteralExpressionSyntaxNode ParseNumberExpression()
+        {
+            var numberToken = MatchCurrentIncrement(SyntaxKind.NumberToken);
+
+            if (string.IsNullOrEmpty(numberToken.Text) || numberToken.Value == null)
+            {
+                Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.NumberToken}>");
+            }
+
+            return new LiteralExpressionSyntaxNode(numberToken);
+        }
+
+        private ParenthesizedExpressionSytanxNode ParseParenthesizedExpression()
+        {
+            var leftToken = MatchCurrentIncrement(SyntaxKind.OpenParenthesisToken);
+
+            if (string.IsNullOrEmpty(leftToken.Text))
+            {
+                Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.OpenParenthesisToken}>");
+            }
+
+            var expression = ParseExpression();
+
+            var rightToken = MatchCurrentIncrement(SyntaxKind.CloseParenthesisToken);
+
+            if (string.IsNullOrEmpty(rightToken.Text))
+            {
+                Diagnostics.LogErrorMessage($"ERROR: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.CloseParenthesisToken}>");
+            }
+
+            return new ParenthesizedExpressionSytanxNode(leftToken, expression, rightToken);
+        }
+
+        private LiteralExpressionSyntaxNode ParseBooleanLiteral()
+        {
+            var isTrue = CurrentSyntaxToken.SyntaxKind == SyntaxKind.TrueKeyword;
+            var keywordToken = isTrue ? MatchCurrentIncrement(SyntaxKind.TrueKeyword) : MatchCurrentIncrement(SyntaxKind.FalseKeyword);
+            return new LiteralExpressionSyntaxNode(keywordToken, isTrue);
+        }
+
+        private NameExpressionSyntaxNode ParseNameExpression()
+        {
+            var identifierToken = NextToken();
+            return new NameExpressionSyntaxNode(identifierToken);
         }
     }
 }

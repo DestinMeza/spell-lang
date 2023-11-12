@@ -6,6 +6,7 @@ namespace Spell.Syntax
 {
     public enum SyntaxKind
     {
+        //Tokens
         BadToken,
         EndOfFileToken,
         NullToken,
@@ -31,12 +32,12 @@ namespace Spell.Syntax
         TrueKeyword,
 
         //Expressions
-        LiteralExpressionToken,
-        UnaryExpressionToken,
-        BinaryExpressionToken,
-        ParenthesizedExpressionToken,
-        NameExpressionToken,
-        AssignmentExpressionToken,
+        LiteralExpression,
+        UnaryExpression,
+        BinaryExpression,
+        ParenthesizedExpression,
+        NameExpression,
+        AssignmentExpression,
     }
 
     public static class SyntaxFacts 

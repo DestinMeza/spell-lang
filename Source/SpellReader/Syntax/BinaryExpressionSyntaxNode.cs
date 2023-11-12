@@ -5,7 +5,7 @@ namespace Spell.Syntax
 
     internal sealed class BinaryExpressionSyntaxNode : ExpressionSyntaxNode
     {
-        public override SyntaxKind SyntaxKind => SyntaxKind.BinaryExpressionToken;
+        public override SyntaxKind SyntaxKind => SyntaxKind.BinaryExpression;
         public override string Text { get => $"{LeftNode.Text} {OperatorToken.Text} {RightNode.Text}"; set { } }
 
         public ExpressionSyntaxNode LeftNode { get; }
@@ -17,13 +17,6 @@ namespace Spell.Syntax
             LeftNode = leftNode;
             OperatorToken = operatorToken;
             RightNode = right;
-        }
-
-        public override IEnumerable<INodeable> GetChildren()
-        {
-            yield return LeftNode;
-            yield return OperatorToken;
-            yield return RightNode;
         }
     }
 }
