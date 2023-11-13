@@ -21,7 +21,7 @@ namespace Spell.Binding
         {
             var parentScope = CreateParentScopes(previous);
             var binder = new Binder(parentScope);
-            var expression = binder.BindExpression(syntax.Expression);
+            var expression = binder.BindStatement(syntax.Statement);
             var variables = binder._scope.GetDeclaredVariables();
 
             return new BoundGlobalScope(previous, variables, expression);
@@ -55,7 +55,44 @@ namespace Spell.Binding
             return parent;
         }
 
-        public BoundExpressionNode BindExpression(ExpressionSyntaxNode syntaxNode) 
+        private BoundStatement BindStatement(StatementSyntaxNode syntaxNode) 
+        {
+            if (syntaxNode == null)
+            {
+                throw new NullReferenceException($"Tried binding a null expression.");
+            }
+
+            switch (syntaxNode.SyntaxKind)
+            {
+                case SyntaxKind.BlockStatement:
+                    return BindBlockStatement(((BlockStatementSyntaxNode)syntaxNode));
+                case SyntaxKind.ExpressionStatement:
+                    return BindExpressionStatement(((ExpressionStatementSyntaxNode)syntaxNode));
+                default:
+                    throw new Exception($"Unexpected syntax {syntaxNode.SyntaxKind}");
+            }
+        }
+        private BoundStatement BindBlockStatement(BlockStatementSyntaxNode syntaxNode)
+        {
+            var statements = new List<BoundStatement>();
+
+            foreach (var statementSyntax in syntaxNode.Statements) 
+            {
+                var statement = BindStatement(statementSyntax);
+                statements.Add(statement);
+            }
+
+            return new BoundBlockStatement(statements);
+        }
+
+        private BoundStatement BindExpressionStatement(ExpressionStatementSyntaxNode syntaxNode)
+        {
+            var expression = BindExpression(syntaxNode.Expression);
+
+            return new BoundExpressionStatement(expression);
+        }
+
+        private BoundExpressionNode BindExpression(ExpressionSyntaxNode syntaxNode) 
         {
             if (syntaxNode == null) 
             {

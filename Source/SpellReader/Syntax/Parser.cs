@@ -88,10 +88,44 @@ namespace Spell.Syntax
 
         public CompilationUnitSyntax ParseCompilationUnit()
         {
-            var expression = ParseExpression();
+            var statement = ParseStatement();
             var endOfFileToken = StrictMatch(SyntaxKind.EndOfFileToken);
 
-            return new CompilationUnitSyntax(expression, endOfFileToken);
+            return new CompilationUnitSyntax(statement, endOfFileToken);
+        }
+
+        private StatementSyntaxNode ParseStatement() 
+        {
+            if (CurrentSyntaxToken.SyntaxKind == SyntaxKind.OpenBraceToken) 
+            {
+                return ParseBlockStatement();
+            }
+
+            return ParseExpressionStatement();
+        }
+
+        private BlockStatementSyntaxNode ParseBlockStatement() 
+        {
+            var statements = new List<StatementSyntaxNode>();
+
+            var openBraceToken = MatchCurrentIncrement(SyntaxKind.OpenBraceToken);
+
+            while (CurrentSyntaxToken.SyntaxKind != SyntaxKind.EndOfFileToken &&
+                   CurrentSyntaxToken.SyntaxKind != SyntaxKind.CloseBraceToken) 
+            {
+                var statement = ParseStatement();
+                statements.Add(statement);
+            }
+
+            var closeBraceToken = MatchCurrentIncrement(SyntaxKind.CloseBraceToken);
+
+            return new BlockStatementSyntaxNode(openBraceToken, statements, closeBraceToken);
+        }
+
+        private StatementSyntaxNode ParseExpressionStatement() 
+        {
+            var expression = ParseExpression();
+            return new ExpressionStatementSyntaxNode(expression);
         }
 
         private ExpressionSyntaxNode ParseExpression() 

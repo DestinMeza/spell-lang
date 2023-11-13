@@ -9,9 +9,12 @@ namespace Spell
 
     internal sealed class Evaluator 
     {
-        private readonly BoundExpressionNode _root;
+        private readonly BoundStatement _root;
         private readonly Dictionary<VariableSymbol, object> _variables;
-        public Evaluator(BoundExpressionNode root, Dictionary<VariableSymbol, object> variables) 
+
+        private object _lastValue;
+
+        public Evaluator(BoundStatement root, Dictionary<VariableSymbol, object> variables) 
         {
             _root = root;
             _variables = variables;
@@ -19,7 +22,32 @@ namespace Spell
 
         public object Evaluate() 
         {
-            return EvaluateExpression(_root);
+            EvaluateStatement(_root);
+            return _lastValue;
+        }
+
+        private void EvaluateStatement(BoundStatement node)
+        {
+            switch (node.Kind)
+            {
+                case BoundNodeKind.BlockStatement: EvaluateBlockStatement((BoundBlockStatement)node); break;
+                case BoundNodeKind.ExpressionStatement: EvaluateExpressionStatement((BoundExpressionStatement)node); break;
+                default:
+                    throw new NotSupportedException($"Node as \"{node.Kind}\" is not supported for evaluation.");
+            }
+        }
+
+        private void EvaluateBlockStatement(BoundBlockStatement node)
+        {
+            foreach (var statement in node.Statements)
+            {
+                EvaluateStatement(statement);
+            }
+        }
+
+        private void EvaluateExpressionStatement(BoundExpressionStatement node)
+        {
+            _lastValue = EvaluateExpression(node.Expression);
         }
 
         private object EvaluateExpression(BoundExpressionNode node) 

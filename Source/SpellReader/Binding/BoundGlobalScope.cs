@@ -7,12 +7,12 @@ namespace Spell.Binding
     {
         public BoundGlobalScope Previous { get; }
         public IReadOnlyCollection<VariableSymbol> Variables { get; }
-        public BoundExpressionNode Expression { get; }
-        public BoundGlobalScope(BoundGlobalScope previous, IReadOnlyCollection<VariableSymbol> variables, BoundExpressionNode expression) 
+        public BoundStatement Statement { get; }
+        public BoundGlobalScope(BoundGlobalScope previous, IReadOnlyCollection<VariableSymbol> variables, BoundStatement statement) 
         {
             Previous = previous;
             Variables = variables;
-            Expression = expression;
+            Statement = statement;
         }
     }
 }

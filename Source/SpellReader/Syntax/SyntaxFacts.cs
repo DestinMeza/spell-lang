@@ -19,6 +19,8 @@ namespace Spell.Syntax
         SlashToken,
         OpenParenthesisToken,
         CloseParenthesisToken,
+        OpenBraceToken,
+        CloseBraceToken,
         EqualsToken,
         EqualsEqualsToken,
         BangEqualsToken,
@@ -41,6 +43,10 @@ namespace Spell.Syntax
 
         //Units
         CompilationUnit,
+
+        //Statements
+        BlockStatement,
+        ExpressionStatement,
     }
 
     public static class SyntaxFacts 
@@ -55,6 +61,8 @@ namespace Spell.Syntax
                 case SyntaxKind.SlashToken:                 return "/";
                 case SyntaxKind.OpenParenthesisToken:       return "(";
                 case SyntaxKind.CloseParenthesisToken:      return ")";
+                case SyntaxKind.OpenBraceToken:             return "{";
+                case SyntaxKind.CloseBraceToken:            return "}";
                 case SyntaxKind.EqualsToken:                return "=";
                 case SyntaxKind.EqualsEqualsToken:          return "==";
                 case SyntaxKind.BangEqualsToken:            return "!=";

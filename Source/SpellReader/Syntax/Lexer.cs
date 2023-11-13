@@ -66,6 +66,14 @@ namespace Spell.Syntax
                     _syntaxKind = SyntaxKind.CloseParenthesisToken;
                     _position++;
                     break;
+                case '{':
+                    _syntaxKind = SyntaxKind.OpenBraceToken;
+                    _position++;
+                    break;
+                case '}':
+                    _syntaxKind = SyntaxKind.CloseBraceToken;
+                    _position++;
+                    break;
                 case '&':
                     if (Lookahead == '&')
                     {
