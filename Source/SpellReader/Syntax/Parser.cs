@@ -94,14 +94,29 @@ namespace Spell.Syntax
             return new CompilationUnitSyntax(statement, endOfFileToken);
         }
 
-        private StatementSyntaxNode ParseStatement() 
+        private StatementSyntaxNode ParseStatement()
         {
-            if (CurrentSyntaxToken.SyntaxKind == SyntaxKind.OpenBraceToken) 
+            switch (CurrentSyntaxToken.SyntaxKind)
             {
-                return ParseBlockStatement();
+                case SyntaxKind.OpenBraceToken:
+                    return ParseBlockStatement();
+                case SyntaxKind.LetKeyword:
+                case SyntaxKind.VarKeyword:
+                    return ParseVariableDeclaration();
             }
 
             return ParseExpressionStatement();
+        }
+
+        private VariableDeclarationSyntaxNode ParseVariableDeclaration()
+        {
+            var expected = CurrentSyntaxToken.SyntaxKind == SyntaxKind.LetKeyword ?  SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
+            var keyword = MatchCurrentIncrement(expected);
+            var identifer = MatchCurrentIncrement(SyntaxKind.IdentifierToken);
+            var equals = MatchCurrentIncrement(SyntaxKind.EqualsToken);
+            var initalizer = ParseExpression();
+
+            return new VariableDeclarationSyntaxNode(keyword, identifer, equals, initalizer);
         }
 
         private BlockStatementSyntaxNode ParseBlockStatement() 

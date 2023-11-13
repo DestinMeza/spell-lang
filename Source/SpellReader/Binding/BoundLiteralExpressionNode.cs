@@ -2,12 +2,12 @@
 
 namespace Spell.Binding
 {
-    internal sealed class BoundLiteralExpression : BoundExpressionNode 
+    internal sealed class BoundLiteralExpressionNode : BoundExpressionNode 
     {
         public override BoundNodeKind Kind => BoundNodeKind.LiteralExpression;
         public override Type Type => Value.GetType();
         public object Value { get; }
-        public BoundLiteralExpression(object value) 
+        public BoundLiteralExpressionNode(object value) 
         {
             Value = value;
         }

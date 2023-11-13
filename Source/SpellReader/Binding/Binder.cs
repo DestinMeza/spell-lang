@@ -66,21 +66,44 @@ namespace Spell.Binding
             {
                 case SyntaxKind.BlockStatement:
                     return BindBlockStatement(((BlockStatementSyntaxNode)syntaxNode));
+                case SyntaxKind.VariableDeclaration:
+                    return BindVariableDeclaration(((VariableDeclarationSyntaxNode)syntaxNode));
                 case SyntaxKind.ExpressionStatement:
                     return BindExpressionStatement(((ExpressionStatementSyntaxNode)syntaxNode));
                 default:
-                    throw new Exception($"Unexpected syntax {syntaxNode.SyntaxKind}");
+                    throw new Exception($"Unexpected syntax {syntaxNode.SyntaxKind} " +
+                        $"\n\r{syntaxNode.Text}");
             }
         }
+
+        private BoundStatement BindVariableDeclaration(VariableDeclarationSyntaxNode syntaxNode)
+        {
+            var name = syntaxNode.Identifier.Text;
+            var isReadOnly = syntaxNode.Keyword.SyntaxKind == SyntaxKind.LetKeyword;
+            var initalizer = BindExpression(syntaxNode.Initalizer);
+            var variable = new VariableSymbol(name, isReadOnly, initalizer.Type);
+
+            if (!_scope.TryDeclare(variable)) 
+            {
+                throw new Exception($"{syntaxNode.Identifier.Span} Variable {name} has already been defined. " +
+                    $"\n\r{syntaxNode.Text}");
+            }
+
+            return new BoundVariableDeclaration(variable, initalizer);
+        }
+
         private BoundStatement BindBlockStatement(BlockStatementSyntaxNode syntaxNode)
         {
             var statements = new List<BoundStatement>();
+            _scope = new BoundScope(_scope);
 
             foreach (var statementSyntax in syntaxNode.Statements) 
             {
                 var statement = BindStatement(statementSyntax);
                 statements.Add(statement);
             }
+
+            _scope = _scope.Parent;
 
             return new BoundBlockStatement(statements);
         }
@@ -114,7 +137,8 @@ namespace Spell.Binding
                 case SyntaxKind.BinaryExpression:
                     return BindBinaryExpression((BinaryExpressionSyntaxNode)syntaxNode);
                 default:
-                    throw new Exception($"Unexpected syntax {syntaxNode.SyntaxKind}");
+                    throw new Exception($"Unexpected syntax {syntaxNode.SyntaxKind} " +
+                        $"\n\r{syntaxNode.Text}");
             }
         }
 
@@ -123,14 +147,15 @@ namespace Spell.Binding
             return BindExpression(sytanxNode.Expression);
         }
 
-        private BoundExpressionNode BindLiteralExpression(LiteralExpressionSyntaxNode syntax) 
+        private BoundExpressionNode BindLiteralExpression(LiteralExpressionSyntaxNode syntaxNode) 
         {
-            if (syntax.Value == null) 
+            if (syntaxNode.Value == null) 
             {
-                throw new NullReferenceException($"Unexpected value {syntax.Value}");
+                throw new NullReferenceException($"Unexpected value {syntaxNode.Value} " +
+                    $"\n\r{syntaxNode.Text}");
             }
 
-            return new BoundLiteralExpression(syntax.Value);
+            return new BoundLiteralExpressionNode(syntaxNode.Value);
         }
 
         private BoundExpressionNode BindNameExpression(NameExpressionSyntaxNode syntaxNode) 
@@ -139,7 +164,8 @@ namespace Spell.Binding
 
             if (!_scope.TryLookup(name, out VariableSymbol variable))
             {
-                Diagnostics.LogErrorMessage($"{syntaxNode.IdentifierToken.Span} variable \"{name}\" does not exist.");
+                throw new Exception($"{syntaxNode.IdentifierToken.Span} variable \"{name}\" does not exist. " +
+                    $"\n\r{syntaxNode.Text}");
             }
 
             return new BoundVariableExpressionNode(variable);
@@ -149,21 +175,28 @@ namespace Spell.Binding
         {
             if (syntaxNode == null)
             {
-                throw new NullReferenceException($"Assignment expression root node is null.");       
+                throw new NullReferenceException($"Assignment expression root node is null.");
             }
 
             var name = syntaxNode.IdentifierToken.Text;
             var boundExpression = BindExpression(syntaxNode.ExpressionSyntaxNode);
 
-            if (!_scope.TryLookup(name, out var variable)) 
+            if (!_scope.TryLookup(name, out var variable))
             {
-                variable = new VariableSymbol(name, boundExpression.Type);
-                _scope.TryDeclare(variable);
+                throw new Exception($"{syntaxNode.IdentifierToken.Span} Variable \"{name}\" does not exist. " +
+                    $"\n\r{syntaxNode.Text}");
+            }
+
+            if (variable.IsReadOnly) 
+            {
+                throw new Exception($"{syntaxNode.IdentifierToken.Span} Variable \"{name}\" is readonly and cannot be assigned to. " +
+                    $"\n\r{syntaxNode.Text}");
             }
 
             if (boundExpression.Type != variable.Type) 
             {
-                Diagnostics.LogErrorMessage($"{syntaxNode.IdentifierToken.Span} Cannot convert variable {name}.");
+                throw new Exception($"{syntaxNode.IdentifierToken.Span} Cannot convert variable {name}. " +
+                    $"\n\r{syntaxNode.Text}");
             }
 
             return new BoundAssignmentExpressionNode(variable, boundExpression);
@@ -173,7 +206,7 @@ namespace Spell.Binding
         {
             if (syntaxNode == null)
             {
-                throw new NullReferenceException($"Unary expression root node is null.");
+                throw new NullReferenceException($"Unary expression root node is null. ");
             }
 
             var boundOperand = BindExpression(syntaxNode.Operand);
@@ -181,13 +214,15 @@ namespace Spell.Binding
 
             if (boundOperand == null)
             {
-                throw new NullReferenceException($"Unary expression's operand node is null.");
+                throw new NullReferenceException($"Unary expression's operand node is null. " +
+                    $"\n\r{syntaxNode.Text}");
             }
             if (boundOperator == null)
             {
                 string boundOperandType = boundOperand.Type?.ToString() ?? "null";
 
-                throw new NullReferenceException($"Unary operator '{syntaxNode.OperatorToken.Text}' is not defined for type {boundOperandType}");
+                throw new NullReferenceException($"Unary operator '{syntaxNode.OperatorToken.Text}' is not defined for type {boundOperandType} " +
+                    $"\n\r{syntaxNode.Text}");
             }
 
             return new BoundUnaryExpressionNode(boundOperator, boundOperand);
@@ -197,8 +232,7 @@ namespace Spell.Binding
         {
             if (syntaxNode == null)
             {
-                Diagnostics.LogErrorMessage($"Binary expression root node is null.");
-                return null;
+                throw new NullReferenceException($"Binary expression root node is null.");
             }
 
             var boundLeft = BindExpression(syntaxNode.LeftNode);
@@ -208,18 +242,19 @@ namespace Spell.Binding
 
             if (boundLeft == null)
             {
-                throw new NullReferenceException($"Binary expression's left node is null");
+                throw new NullReferenceException($"Binary expression's left node is null \n\r{syntaxNode.Text}");
             }
             if (boundLeft == null)
             {
-                throw new NullReferenceException($"Binary expression's right node is null");
+                throw new NullReferenceException($"Binary expression's right node is null \n\r{syntaxNode.Text}");
             }
             if (boundOperator == null)
             {
                 string boundLeftType = boundLeft.Type?.ToString() ?? "null";
                 string boundRightType = boundRight.Type?.ToString() ?? "null";
 
-                throw new NullReferenceException($"Binary operator '{syntaxNode.OperatorToken.Text}' is not defined for type \"{boundLeftType}\" and \"{boundRightType}\"");
+                throw new NullReferenceException($"Binary operator '{syntaxNode.OperatorToken.Text}' is not defined for type \"{boundLeftType}\" and \"{boundRightType}\" " +
+                    $"\n\r{syntaxNode.Text}");
             }
 
             return new BoundBinaryExpressionNode(boundLeft, boundOperator, boundRight);

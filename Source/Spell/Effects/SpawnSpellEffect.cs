@@ -1,4 +1,4 @@
-namespace Spell
+namespace Spell.IO
 {
     [System.Serializable]
     public class SpawnSpellEffect : IEffect

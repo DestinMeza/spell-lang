@@ -31,6 +31,7 @@ namespace Spell
             switch (node.Kind)
             {
                 case BoundNodeKind.BlockStatement: EvaluateBlockStatement((BoundBlockStatement)node); break;
+                case BoundNodeKind.VariableDeclaration: EvaluateVariableDeclaration((BoundVariableDeclaration)node); break;
                 case BoundNodeKind.ExpressionStatement: EvaluateExpressionStatement((BoundExpressionStatement)node); break;
                 default:
                     throw new NotSupportedException($"Node as \"{node.Kind}\" is not supported for evaluation.");
@@ -44,6 +45,12 @@ namespace Spell
                 EvaluateStatement(statement);
             }
         }
+        private void EvaluateVariableDeclaration(BoundVariableDeclaration node)
+        {
+            var value = EvaluateExpression(node.Initalizer);
+            _variables[node.Variable] = value;
+            _lastValue = value;
+        }
 
         private void EvaluateExpressionStatement(BoundExpressionStatement node)
         {
@@ -55,7 +62,7 @@ namespace Spell
 
             switch (node.Kind)
             {
-                case BoundNodeKind.LiteralExpression: return EvaluateLiteralExpression((BoundLiteralExpression)node);
+                case BoundNodeKind.LiteralExpression: return EvaluateLiteralExpression((BoundLiteralExpressionNode)node);
                 case BoundNodeKind.UnaryExpression: return EvaluateUnaryExpression((BoundUnaryExpressionNode)node);
                 case BoundNodeKind.BinaryExpression: return EvaluateBinaryExpression((BoundBinaryExpressionNode)node);
                 case BoundNodeKind.VariableExpression: return EvaluateVariableExpression((BoundVariableExpressionNode)node);
@@ -65,7 +72,7 @@ namespace Spell
             }
         }
 
-        private static object EvaluateLiteralExpression(BoundLiteralExpression n)
+        private static object EvaluateLiteralExpression(BoundLiteralExpressionNode n)
         {
             return n.Value;
         }

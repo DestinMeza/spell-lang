@@ -19,7 +19,7 @@ namespace Spell
     public class SpellCompiler
     {
         private Dictionary<VariableSymbol, object> variables;
-        private Compilation previousCompilation = null;
+        private Compilation previousCompilation;
 
         public SpellCompiler() 
         {
@@ -31,6 +31,7 @@ namespace Spell
         public void ResetCompilation() 
         {
             previousCompilation = null;
+            Diagnostics.ClearLogs();
         }
 
         public void ReadAsync(string sourceCode, CancellationToken ct, Action<TaskResult> callback = null)
@@ -77,9 +78,12 @@ namespace Spell
                     ? new Compilation(syntaxTree) 
                     : previousCompilation.ContinueWith(syntaxTree);
 
-                previousCompilation = complation;
-
                 evaluationResult = complation.Evaluate(variables);
+
+                if (!evaluationResult.LogTypes.Contains(ELogType.Error)) 
+                {
+                    previousCompilation = complation;
+                }
 
                 result.Result = evaluationResult;
             }
@@ -125,9 +129,12 @@ namespace Spell
                     ? new Compilation(syntaxTree) 
                     : previousCompilation.ContinueWith(syntaxTree);
 
-                previousCompilation = complation;
-
                 evaluationResult = complation.Evaluate(variables);
+
+                if (!evaluationResult.LogTypes.Contains(ELogType.Error))
+                {
+                    previousCompilation = complation;
+                }
             }
             catch (Exception e)
             {

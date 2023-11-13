@@ -31,7 +31,14 @@ namespace Spell.Syntax
 
         //Keywords
         FalseKeyword,
+        LetKeyword,
         TrueKeyword,
+        VarKeyword,
+
+        //Statements
+        BlockStatement,
+        ExpressionStatement,
+        VariableDeclaration,
 
         //Expressions
         LiteralExpression,
@@ -43,10 +50,6 @@ namespace Spell.Syntax
 
         //Units
         CompilationUnit,
-
-        //Statements
-        BlockStatement,
-        ExpressionStatement,
     }
 
     public static class SyntaxFacts 
@@ -70,7 +73,10 @@ namespace Spell.Syntax
                 case SyntaxKind.PipePipeToken:              return "||";
                 case SyntaxKind.BangToken:                  return "!";
                 case SyntaxKind.FalseKeyword:               return "false";
+                case SyntaxKind.LetKeyword:                 return "let";
                 case SyntaxKind.TrueKeyword:                return "true";
+                case SyntaxKind.VarKeyword:                 return "var";
+
                 default:
                     return null;
             }
@@ -144,12 +150,12 @@ namespace Spell.Syntax
         {
             switch (text) 
             {
-                case "true":
-                    return SyntaxKind.TrueKeyword;
-                case "false":
-                    return SyntaxKind.FalseKeyword;
-                default:
-                    return SyntaxKind.IdentifierToken;
+                case "false":   return SyntaxKind.FalseKeyword;
+                case "let":     return SyntaxKind.LetKeyword;
+                case "true":    return SyntaxKind.TrueKeyword;
+                case "var":     return SyntaxKind.VarKeyword;
+
+                default:        return SyntaxKind.IdentifierToken;
             }
         }
     }

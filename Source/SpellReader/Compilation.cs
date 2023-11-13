@@ -57,6 +57,9 @@ namespace Spell
             var evaluator = new Evaluator(GlobalScope.Statement, variables);
             var value = evaluator.Evaluate();
 
+            diagnostics = Diagnostics.GetLogs();
+            Diagnostics.ClearLogs();
+
             return new EvaluationResult(SyntaxTree.Root.ToString(), diagnostics, value);
         }
     }
