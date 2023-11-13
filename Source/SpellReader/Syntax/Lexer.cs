@@ -124,7 +124,7 @@ namespace Spell.Syntax
                     }
                     else 
                     {
-                        Diagnostics.LogErrorMessage($"Error: {CurrentLine.Span} bad character input: '{Current}'\n\t" +
+                        Diagnostics.LogMessage($"Error: {CurrentLine.Span} bad character input: '{Current}'\n\t" +
                             $"{CurrentLine}");
                         _position++;
                     }
@@ -162,7 +162,7 @@ namespace Spell.Syntax
             var text = _text.ToString(_start, length);
             if (!int.TryParse(text, out int value))
             {
-                Diagnostics.LogErrorMessage($"Error: {CurrentLine.Span} The number {text} isn't a valid Int32.'\n\t" +
+                Diagnostics.LogMessage($"Error: {CurrentLine.Span} The number {text} isn't a valid Int32.'\n\t" +
                             $"{CurrentLine}");
             }
 

@@ -61,10 +61,10 @@ namespace Spell.Syntax
 
             writer.Write(node.SyntaxKind);
 
-            if (node is SyntaxToken t && t.Value != null)
+            if (node is SyntaxToken t && t.Text != null)
             {
-                writer.Write(" ");
-                writer.Write(t.Value);
+                writer.Write(": ");
+                writer.Write($"\"{t.Text}\"");
             }
 
             writer.WriteLine();

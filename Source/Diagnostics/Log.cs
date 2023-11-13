@@ -32,7 +32,7 @@
                 case EDebugType.Mute:
                     return "";
                 case EDebugType.Explicit:
-                    return $"\"{message}\" \n File: {sourceFilePath} From: {memberName} Line: {sourceLineNumber}";
+                    return $"\"{message}\" \n File: \"{sourceFilePath}\" In Member: \"{memberName}\" Line: \"{sourceLineNumber}\"";
                 default:
                     return message;
             }

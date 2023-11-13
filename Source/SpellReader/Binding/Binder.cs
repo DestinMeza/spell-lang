@@ -10,10 +10,49 @@ namespace Spell.Binding
 
     internal sealed class Binder 
     {
-        private readonly Dictionary<VariableSymbol, object> _variables;
-        public Binder(Dictionary<VariableSymbol, object> variables) 
+        private BoundScope _scope;
+
+        public Binder(BoundScope parent) 
         {
-            _variables = variables;
+            _scope = new BoundScope(parent);
+        }
+
+        public static BoundGlobalScope BindGlobalScope(BoundGlobalScope previous, CompilationUnitSyntax syntax) 
+        {
+            var parentScope = CreateParentScopes(previous);
+            var binder = new Binder(parentScope);
+            var expression = binder.BindExpression(syntax.Expression);
+            var variables = binder._scope.GetDeclaredVariables();
+
+            return new BoundGlobalScope(previous, variables, expression);
+        }
+
+        private static BoundScope CreateParentScopes(BoundGlobalScope previous) 
+        {
+            //submission 3 -> submission -> 2 submission -> 1
+            var stack = new Stack<BoundGlobalScope>();
+
+            while (previous != null) 
+            {
+                stack.Push(previous);
+                previous = previous.Previous;
+            }
+
+            BoundScope parent = null;
+
+            while (stack.Count > 0) 
+            {
+                previous = stack.Pop();
+                var scope = new BoundScope(parent);
+                foreach (var v in previous.Variables) 
+                {
+                    scope.TryDeclare(v);
+                }
+
+                parent = scope;
+            }
+
+            return parent;
         }
 
         public BoundExpressionNode BindExpression(ExpressionSyntaxNode syntaxNode) 
@@ -61,14 +100,12 @@ namespace Spell.Binding
         {
             var name = syntaxNode.IdentifierToken.Text;
 
-            var variableSymbol = _variables.Keys.FirstOrDefault(v => v.Name == name);
-
-            if (variableSymbol == null)
+            if (!_scope.TryLookup(name, out VariableSymbol variable))
             {
                 Diagnostics.LogErrorMessage($"{syntaxNode.IdentifierToken.Span} variable \"{name}\" does not exist.");
             }
 
-            return new BoundVariableExpressionNode(variableSymbol);
+            return new BoundVariableExpressionNode(variable);
         }
 
         private BoundExpressionNode BindAssignmentExpression(AssignmentExpressionSyntaxNode syntaxNode)
@@ -81,15 +118,16 @@ namespace Spell.Binding
             var name = syntaxNode.IdentifierToken.Text;
             var boundExpression = BindExpression(syntaxNode.ExpressionSyntaxNode);
 
-            var existingVariable = _variables.Keys.FirstOrDefault(v => v.Name == name);
-
-            if (existingVariable != null) 
+            if (!_scope.TryLookup(name, out var variable)) 
             {
-                _variables.Remove(existingVariable);
+                variable = new VariableSymbol(name, boundExpression.Type);
+                _scope.TryDeclare(variable);
             }
 
-            var variable = new VariableSymbol(name, boundExpression.Type);
-            _variables[variable] = null;
+            if (boundExpression.Type != variable.Type) 
+            {
+                Diagnostics.LogErrorMessage($"{syntaxNode.IdentifierToken.Span} Cannot convert variable {name}.");
+            }
 
             return new BoundAssignmentExpressionNode(variable, boundExpression);
         }

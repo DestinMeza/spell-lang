@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Spell
 {
@@ -64,7 +65,7 @@ namespace Spell
         
         }
 
-        public static bool Assert(bool state, string errorMessage, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0)
+        public static bool Assert(bool state, string errorMessage, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
             if (state) 
             {
@@ -74,21 +75,21 @@ namespace Spell
             return state;
         }
 
-        public static void LogMessage(string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0)
+        public static void LogMessage(string message, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
             Instance.Logs.Add(new Log(message, ELogType.Default, memberName, sourceFilePath, sourceLineNumber));
 
             Instance.OnHiddenLog(message, memberName, sourceFilePath, sourceLineNumber);
         }
 
-        public static void LogWarningMessage(string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0)
+        public static void LogWarningMessage(string message, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
             Instance.Logs.Add(new Log(message, ELogType.Warning, memberName, sourceFilePath, sourceLineNumber));
 
             Instance.OnHiddenWarning(message, memberName, sourceFilePath, sourceLineNumber);
         }
 
-        public static void LogErrorMessage(string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0)
+        public static void LogErrorMessage(string message, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
             Instance.Logs.Add(new Log(message, ELogType.Error, memberName, sourceFilePath, sourceLineNumber));
 
@@ -104,7 +105,19 @@ namespace Spell
 
         public static Log[] GetLogs()
         {
-            return instance.Logs.ToArray();
+            Log[] logs = new Log[Instance.Logs.Count];
+            for (int i = 0; i < logs.Length; i++) 
+            {
+                string message = Instance.Logs[i].message;
+                ELogType logType = Instance.Logs[i].ELogType;
+                string memberName = Instance.Logs[i].memberName;
+                string sourceFilePath = Instance.Logs[i].sourceFilePath;
+                int sourceLineNumber = Instance.Logs[i].sourceLineNumber;
+
+                logs[i] = new Log(message, logType, memberName, sourceFilePath, sourceLineNumber);
+            }
+
+            return logs;
         }
 
         public static void ClearLogs() 

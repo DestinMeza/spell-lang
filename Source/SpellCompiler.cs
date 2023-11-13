@@ -19,6 +19,7 @@ namespace Spell
     public class SpellCompiler
     {
         private Dictionary<VariableSymbol, object> variables;
+        private Compilation previousCompilation = null;
 
         public SpellCompiler() 
         {
@@ -26,6 +27,11 @@ namespace Spell
         }
 
         #region Async
+
+        public void ResetCompilation() 
+        {
+            previousCompilation = null;
+        }
 
         public void ReadAsync(string sourceCode, CancellationToken ct, Action<TaskResult> callback = null)
         {
@@ -47,28 +53,46 @@ namespace Spell
 
         internal async Task<TaskResult> ReadSourceCode(string sourceText, TaskResult result)
         {
+            EvaluationResult evaluationResult = null;
+            SyntaxTree syntaxTree = null;
+
             try
             {
                 if (string.IsNullOrWhiteSpace(sourceText))
                 {
                     Diagnostics.LogErrorMessage("Error: Empty Source Code");
-                    result.Result = null;
+
+                    var diagnostics = Diagnostics.GetLogs();
+                    Diagnostics.ClearLogs();
+
+                    evaluationResult = new EvaluationResult(null, diagnostics, null);
+
+                    result.Result = evaluationResult;
                     return result;
                 }
 
-                SyntaxTree syntaxTree = SyntaxTree.Parse(sourceText);
+                syntaxTree = SyntaxTree.Parse(sourceText);
 
-                Compilation complation = new Compilation(syntaxTree);
+                Compilation complation = previousCompilation == null 
+                    ? new Compilation(syntaxTree) 
+                    : previousCompilation.ContinueWith(syntaxTree);
 
-                Diagnostics.LogMessage(syntaxTree.Root.ToString());
+                previousCompilation = complation;
 
-                var evaluationResult = complation.Evaluate(variables);
+                evaluationResult = complation.Evaluate(variables);
 
                 result.Result = evaluationResult;
             }
             catch (Exception e)
             {
                 Diagnostics.LogErrorMessage($"Error: {e.Message}");
+
+                var diagnostics = Diagnostics.GetLogs();
+                Diagnostics.ClearLogs();
+
+                evaluationResult = new EvaluationResult(syntaxTree?.Root.ToString() ?? null, diagnostics, null);
+
+                result.Result = evaluationResult;
             }
 
             return result;
@@ -76,34 +100,46 @@ namespace Spell
 
         #endregion
 
-        public void Read(string sourceText)
+        public EvaluationResult Read(string sourceText)
         {
-            Diagnostics.LogMessage("-----Reading File------");
+            EvaluationResult evaluationResult = null;
+            SyntaxTree syntaxTree = null;
 
             try
             {
                 if (string.IsNullOrWhiteSpace(sourceText))
                 {
                     Diagnostics.LogErrorMessage("Error: Empty Source Code");
-                    return;
+
+                    var diagnostics = Diagnostics.GetLogs();
+                    Diagnostics.ClearLogs();
+
+                    evaluationResult = new EvaluationResult(null, diagnostics, null);
+
+                    return evaluationResult;
                 }
 
-                SyntaxTree syntaxTree = SyntaxTree.Parse(sourceText);
+                syntaxTree = SyntaxTree.Parse(sourceText);
 
-                Diagnostics.LogMessage(syntaxTree.Root.ToString());
+                Compilation complation = previousCompilation == null 
+                    ? new Compilation(syntaxTree) 
+                    : previousCompilation.ContinueWith(syntaxTree);
 
-                Compilation complation = new Compilation(syntaxTree);
-                var result = complation.Evaluate(variables);
+                previousCompilation = complation;
 
-                if (result.Value != null) 
-                {
-                    Diagnostics.LogMessage($"Result: {result.Value}");
-                }
+                evaluationResult = complation.Evaluate(variables);
             }
             catch (Exception e)
             {
                 Diagnostics.LogErrorMessage($"Error: {e.Message}");
+
+                var diagnostics = Diagnostics.GetLogs();
+                Diagnostics.ClearLogs();
+
+                evaluationResult = new EvaluationResult(syntaxTree?.Root.ToString() ?? null, diagnostics, null);
             }
+
+            return evaluationResult;
         }
     }
 }
