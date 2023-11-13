@@ -6,14 +6,16 @@ namespace Spell.Syntax
     public sealed class SyntaxTree 
     {
         public SourceText Text { get; }
-        public ExpressionSyntaxNode Root { get; }
+        public CompilationUnitSyntax Root { get; }
         public SyntaxToken EndOfFileToken { get; }
 
-        public SyntaxTree(SourceText text, ExpressionSyntaxNode root, SyntaxToken endOfFileToken) 
+        private SyntaxTree(SourceText text) 
         {
+            var parser = new Parser(text);
+            var root = parser.ParseCompilationUnit();
+
             Text = text;
             Root = root;
-            EndOfFileToken = endOfFileToken;
         }
 
         public static SyntaxTree Parse(string text) 
@@ -23,8 +25,7 @@ namespace Spell.Syntax
         }
         public static SyntaxTree Parse(SourceText text)
         {
-            var parser = new Parser(text);
-            return parser.Parse();
+            return new SyntaxTree(text);
         }
 
         public static IEnumerable<SyntaxToken> ParseTokens(string text) 

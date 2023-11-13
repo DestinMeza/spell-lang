@@ -56,10 +56,7 @@ namespace Spell
                     return result;
                 }
 
-                SourceText sourceCode = SourceText.From(sourceText);
-
-                Parser parser = new Parser(sourceCode);
-                SyntaxTree syntaxTree = parser.Parse();
+                SyntaxTree syntaxTree = SyntaxTree.Parse(sourceText);
 
                 Compilation complation = new Compilation(syntaxTree);
 
@@ -91,10 +88,7 @@ namespace Spell
                     return;
                 }
 
-                SourceText sourceCode = SourceText.From(sourceText);
-
-                Parser parser = new Parser(sourceCode);
-                SyntaxTree syntaxTree = parser.Parse();
+                SyntaxTree syntaxTree = SyntaxTree.Parse(sourceText);
 
                 Diagnostics.LogMessage(syntaxTree.Root.ToString());
 

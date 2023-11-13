@@ -38,6 +38,9 @@ namespace Spell.Syntax
         ParenthesizedExpression,
         NameExpression,
         AssignmentExpression,
+
+        //Units
+        CompilationUnit,
     }
 
     public static class SyntaxFacts 

@@ -7,6 +7,7 @@ namespace Spell.Syntax
     internal sealed class Parser
     {
         private SyntaxToken CurrentSyntaxToken => GetTokenAtOffset(0);
+        private TextLine CurrentLine => _text.Lines[_text.GetLineIndex(_position)];
 
         private readonly SourceText _text;
         private readonly SyntaxToken[] _tokens;
@@ -69,7 +70,8 @@ namespace Spell.Syntax
                 return NextToken();
             }
 
-            Diagnostics.LogErrorMessage($"Error: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{syntaxKind}>");
+            Diagnostics.LogErrorMessage($"Error: {CurrentLine.Span} Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{syntaxKind}>\n\t" +
+                $"{CurrentLine}");
 
             return new SyntaxToken(syntaxKind, CurrentSyntaxToken.Position, null, null);
         }
@@ -84,12 +86,12 @@ namespace Spell.Syntax
             return new SyntaxToken(syntaxKind, CurrentSyntaxToken.Position, null, null);
         }
 
-        public SyntaxTree Parse()
+        public CompilationUnitSyntax ParseCompilationUnit()
         {
             var expression = ParseExpression();
             var endOfFileToken = StrictMatch(SyntaxKind.EndOfFileToken);
 
-            return new SyntaxTree(_text, expression, endOfFileToken);
+            return new CompilationUnitSyntax(expression, endOfFileToken);
         }
 
         private ExpressionSyntaxNode ParseExpression() 
@@ -154,7 +156,8 @@ namespace Spell.Syntax
                 case SyntaxKind.TrueKeyword:            return ParseBooleanLiteral();
                 case SyntaxKind.IdentifierToken:        return ParseNameExpression();
                 default:
-                    Diagnostics.LogErrorMessage($"Error: Unexpected SyntaxKind <{CurrentSyntaxToken.SyntaxKind}>, the following is not parsable.");
+                    Diagnostics.LogErrorMessage($"Error: {CurrentLine.Span} Unexpected SyntaxKind <{CurrentSyntaxToken.SyntaxKind}>, the following is not parsable.\n\t" +
+                        $"{CurrentLine}");
                     return null;
             };
         }
@@ -165,7 +168,8 @@ namespace Spell.Syntax
 
             if (string.IsNullOrEmpty(numberToken.Text) || numberToken.Value == null)
             {
-                Diagnostics.LogErrorMessage($"Error: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.NumberToken}>");
+                Diagnostics.LogErrorMessage($"Error:  {CurrentLine.Span} Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.NumberToken}>\n\t" +
+                        $"{CurrentLine}");
             }
 
             return new LiteralExpressionSyntaxNode(numberToken);
@@ -177,7 +181,8 @@ namespace Spell.Syntax
 
             if (string.IsNullOrEmpty(leftToken.Text))
             {
-                Diagnostics.LogErrorMessage($"Error: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.OpenParenthesisToken}>");
+                Diagnostics.LogErrorMessage($"Error:  {CurrentLine.Span} Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.OpenParenthesisToken}>\n\t" +
+                        $"{CurrentLine}");
             }
 
             var expression = ParseExpression();
@@ -186,7 +191,8 @@ namespace Spell.Syntax
 
             if (string.IsNullOrEmpty(rightToken.Text))
             {
-                Diagnostics.LogErrorMessage($"Error: Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.CloseParenthesisToken}>");
+                Diagnostics.LogErrorMessage($"Error: {CurrentLine.Span} Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.CloseParenthesisToken}>\n\t" +
+                        $"{CurrentLine}");
             }
 
             return new ParenthesizedExpressionSytanxNode(leftToken, expression, rightToken);

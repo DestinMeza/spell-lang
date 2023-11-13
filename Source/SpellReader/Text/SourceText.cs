@@ -72,7 +72,7 @@ namespace Spell
                 }
             }
 
-            if (position > lineStart) 
+            if (position >= lineStart)
             {
                 AddLine(textLines, sourceText, position, lineStart, 0);
             }
@@ -91,14 +91,14 @@ namespace Spell
 
         private static int GetLineBreakWidth(string text, int i) 
         {
-            var c = text[i];
-            var l = i + 1 >= text.Length ? '\0' : text[i + 1];
+            var current = text[i];
+            var lookahead = i + 1 >= text.Length ? '\0' : text[i + 1];
 
-            if (c == '\r' && l == '\n') 
+            if (current == '\r' && lookahead == '\n') 
             {
                 return 2;
             }
-            if (c == '\r' || l == '\n')
+            if (current == '\r' || lookahead == '\n')
             {
                 return 1;
             }
