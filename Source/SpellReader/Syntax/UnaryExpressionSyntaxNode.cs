@@ -6,7 +6,7 @@ namespace Spell.Syntax
     internal sealed class UnaryExpressionSyntax : ExpressionSyntaxNode
     {
         public override SyntaxKind SyntaxKind => SyntaxKind.UnaryExpression;
-        public override string Text { get => $"{OperatorToken.Text} {Operand.Text}"; set { } }
+        public override string Text { get => $"{OperatorToken.Text}{Operand.Text}"; set { } }
         public SyntaxToken OperatorToken { get; }
         public ExpressionSyntaxNode Operand { get; }
 

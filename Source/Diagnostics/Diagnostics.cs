@@ -48,52 +48,52 @@ namespace Spell
             debugType = _debugType;
         }
 
-        protected virtual void OnAssert(string errorMessage, string memberName, string sourceFilePath, int sourceLineNumber) 
+        protected virtual void OnAssert(string message, TextSpan span = default) 
         {
 
         }
-        protected virtual void OnHiddenLog(string message, string memberName, string sourceFilePath, int sourceLineNumber) 
+        protected virtual void OnHiddenLog(string message, TextSpan span = default) 
         {
         
         }
-        protected virtual void OnHiddenWarning(string message, string memberName, string sourceFilePath, int sourceLineNumber) 
+        protected virtual void OnHiddenWarning(string message, TextSpan span = default) 
         { 
         
         }
-        protected virtual void OnHiddenLogError(string message, string memberName, string sourceFilePath, int sourceLineNumber)
+        protected virtual void OnHiddenLogError(string message, TextSpan span = default)
         {
         
         }
 
-        public static bool Assert(bool state, string errorMessage, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public static bool Assert(bool state, string errorMessage, TextSpan span = default)
         {
             if (state) 
             {
-                Instance.OnAssert(errorMessage, memberName, sourceFilePath, sourceLineNumber);
+                Instance.OnAssert(errorMessage, span);
             }
 
             return state;
         }
 
-        public static void LogMessage(string message, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public static void LogMessage(string message, TextSpan span = default)
         {
-            Instance.Logs.Add(new Log(message, ELogType.Default, memberName, sourceFilePath, sourceLineNumber));
+            Instance.Logs.Add(new Log(message, span, ELogType.Default));
 
-            Instance.OnHiddenLog(message, memberName, sourceFilePath, sourceLineNumber);
+            Instance.OnHiddenLog(message, span);
         }
 
-        public static void LogWarningMessage(string message, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public static void LogWarningMessage(string message, TextSpan span = default)
         {
-            Instance.Logs.Add(new Log(message, ELogType.Warning, memberName, sourceFilePath, sourceLineNumber));
+            Instance.Logs.Add(new Log(message, span, ELogType.Warning));
 
-            Instance.OnHiddenWarning(message, memberName, sourceFilePath, sourceLineNumber);
+            Instance.OnHiddenWarning(message, span);
         }
 
-        public static void LogErrorMessage(string message, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public static void LogErrorMessage(string message, TextSpan span = default)
         {
-            Instance.Logs.Add(new Log(message, ELogType.Error, memberName, sourceFilePath, sourceLineNumber));
+            Instance.Logs.Add(new Log(message, span, ELogType.Error));
 
-            Instance.OnHiddenLogError(message, memberName, sourceFilePath, sourceLineNumber);
+            Instance.OnHiddenLogError(message, span);
         }
 
         public static EDebugType SetDebugState(EDebugType debugType)
@@ -109,12 +109,10 @@ namespace Spell
             for (int i = 0; i < logs.Length; i++) 
             {
                 string message = Instance.Logs[i].message;
-                ELogType logType = Instance.Logs[i].ELogType;
-                string memberName = Instance.Logs[i].memberName;
-                string sourceFilePath = Instance.Logs[i].sourceFilePath;
-                int sourceLineNumber = Instance.Logs[i].sourceLineNumber;
+                TextSpan span = Instance.Logs[i].span;
+                ELogType logType = Instance.Logs[i].logType;
 
-                logs[i] = new Log(message, logType, memberName, sourceFilePath, sourceLineNumber);
+                logs[i] = new Log(message, span, logType);
             }
 
             return logs;

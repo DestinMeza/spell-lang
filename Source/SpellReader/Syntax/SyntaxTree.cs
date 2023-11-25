@@ -5,17 +5,20 @@ namespace Spell.Syntax
 {
     public sealed class SyntaxTree 
     {
+        private readonly Dictionary<VariableSymbol, object> _variables;
         public SourceText Text { get; }
         public CompilationUnitSyntax Root { get; }
         public SyntaxToken EndOfFileToken { get; }
 
-        private SyntaxTree(SourceText text) 
+        private SyntaxTree(SourceText text, Dictionary<VariableSymbol, object> variables = null) 
         {
             var parser = new Parser(text);
             var root = parser.ParseCompilationUnit();
 
             Text = text;
             Root = root;
+
+            _variables = variables;
         }
 
         public static SyntaxTree Parse(string text) 

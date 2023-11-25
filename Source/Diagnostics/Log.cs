@@ -9,18 +9,14 @@
     public class Log
     {
         public readonly string message;
-        public readonly ELogType ELogType;
-        public readonly string memberName;
-        public readonly string sourceFilePath;
-        public readonly int sourceLineNumber;
+        public readonly TextSpan span;
+        public readonly ELogType logType;
 
-        public Log(string _message, ELogType eLogType, string _memberName, string _sourceFilePath, int _sourceLineNumber)
+        public Log(string _message, TextSpan _span, ELogType _logType)
         {
             message = _message;
-            ELogType = eLogType;
-            memberName = _memberName;
-            sourceLineNumber = _sourceLineNumber;
-            sourceFilePath = _sourceFilePath;
+            span = _span;
+            logType = _logType;
         }
 
         public string Message() 
@@ -31,8 +27,6 @@
                     return message;
                 case EDebugType.Mute:
                     return "";
-                case EDebugType.Explicit:
-                    return $"\"{message}\" \n File: \"{sourceFilePath}\" In Member: \"{memberName}\" Line: \"{sourceLineNumber}\"";
                 default:
                     return message;
             }

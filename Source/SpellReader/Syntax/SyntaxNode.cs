@@ -41,12 +41,12 @@ namespace Spell.Syntax
             }
         }
 
-        public void WriteTo(TextWriter writer) 
+        public void WriteTo(TextWriter writer, Dictionary<VariableSymbol, object> variables = null) 
         {
-            WriteTree(writer, this);
+            WriteTree(writer, this, variables);
         }
 
-        private static void WriteTree(TextWriter writer, INodeable node, string indent = "", bool isLast = true)
+        private static void WriteTree(TextWriter writer, INodeable node, Dictionary<VariableSymbol, object> variables = null, string indent = "", bool isLast = true)
         {
             var marker = isLast ? "`--" : "|--";
 
@@ -64,7 +64,21 @@ namespace Spell.Syntax
             if (node is SyntaxToken t && t.Text != null)
             {
                 writer.Write(": ");
-                writer.Write($"\"{t.Text}\"");
+                writer.Write($"Text: \"{t.Text}\"");
+
+
+                object value = null;
+
+                if (variables != null)
+                {
+                    var keyRef = variables.Keys.Where(x => x.Name == t.Text).Select(x => x).FirstOrDefault();
+
+                    if (keyRef != null)
+                    {
+                        variables.TryGetValue(keyRef, out value);
+                        writer.Write($" Value: \"{value}\"");
+                    }
+                }
             }
 
             writer.WriteLine();
@@ -75,7 +89,16 @@ namespace Spell.Syntax
 
             foreach (var child in node.GetChildren())
             {
-                WriteTree(writer, child, indent, child == lastChild);
+                WriteTree(writer, child, variables, indent, isLast: child == lastChild);
+            }
+        }
+
+        public string ToString(Dictionary<VariableSymbol, object> variables) 
+        {
+            using (var writer = new StringWriter())
+            {
+                WriteTo(writer, variables);
+                return writer.ToString();
             }
         }
 

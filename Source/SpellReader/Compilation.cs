@@ -30,7 +30,7 @@ namespace Spell
 
         public Compilation(SyntaxTree syntaxTree) : this(null, syntaxTree)
         {
-            SyntaxTree = syntaxTree;
+
         }
 
         private Compilation(Compilation previous, SyntaxTree syntaxTree) 
@@ -49,9 +49,9 @@ namespace Spell
             var diagnostics = Diagnostics.GetLogs();
             Diagnostics.ClearLogs();
 
-            if (diagnostics.Any(x => x.ELogType == ELogType.Error)) 
+            if (diagnostics.Any(x => x.logType == ELogType.Error)) 
             {
-                return new EvaluationResult(SyntaxTree.Root.ToString(), diagnostics, null);
+                return new EvaluationResult(SyntaxTree.Root.ToString(variables), diagnostics, null);
             }
 
             var evaluator = new Evaluator(GlobalScope.Statement, variables);
@@ -60,7 +60,7 @@ namespace Spell
             diagnostics = Diagnostics.GetLogs();
             Diagnostics.ClearLogs();
 
-            return new EvaluationResult(SyntaxTree.Root.ToString(), diagnostics, value);
+            return new EvaluationResult(SyntaxTree.Root.ToString(variables), diagnostics, value);
         }
     }
 }

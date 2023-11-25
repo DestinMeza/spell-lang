@@ -70,10 +70,8 @@ namespace Spell.Syntax
                 return NextToken();
             }
 
-            Diagnostics.LogErrorMessage($"Error: {CurrentLine.Span} Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{syntaxKind}>\n\t" +
+            throw new Exception($"Error: {CurrentLine.Span} Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{syntaxKind}>\n\t" +
                 $"{CurrentLine}");
-
-            return new SyntaxToken(syntaxKind, CurrentSyntaxToken.Position, null, null);
         }
 
         private SyntaxToken MatchCurrentIncrement(SyntaxKind syntaxKind)
@@ -148,12 +146,10 @@ namespace Spell.Syntax
             return ParseAssignmentExpression();
         }
 
-        //TODO implement Statements. Statement will be the proper way to handle this "assignment" logic.
-        //Uses a Right to Left tree reading model instead of a left to right.
         private ExpressionSyntaxNode ParseAssignmentExpression() 
         {
             if (GetTokenAtOffset(0).SyntaxKind == SyntaxKind.IdentifierToken &&
-               GetTokenAtOffset(1).SyntaxKind == SyntaxKind.EqualsToken) 
+                GetTokenAtOffset(1).SyntaxKind == SyntaxKind.EqualsToken) 
             {
                 var identiferToken = NextToken();
                 var operatorToken = NextToken();
@@ -205,9 +201,8 @@ namespace Spell.Syntax
                 case SyntaxKind.TrueKeyword:            return ParseBooleanLiteral();
                 case SyntaxKind.IdentifierToken:        return ParseNameExpression();
                 default:
-                    Diagnostics.LogErrorMessage($"Error: {CurrentLine.Span} Unexpected SyntaxKind <{CurrentSyntaxToken.SyntaxKind}>, the following is not parsable.\n\t" +
+                    throw new Exception($"{CurrentLine.Span} Unexpected SyntaxKind <{CurrentSyntaxToken.SyntaxKind}>, the following is not parsable.\n\t" +
                         $"{CurrentLine}");
-                    return null;
             };
         }
 
@@ -217,7 +212,7 @@ namespace Spell.Syntax
 
             if (string.IsNullOrEmpty(numberToken.Text) || numberToken.Value == null)
             {
-                Diagnostics.LogErrorMessage($"Error:  {CurrentLine.Span} Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.NumberToken}>\n\t" +
+                throw new Exception($"{CurrentLine.Span} Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.NumberToken}>\n\t" +
                         $"{CurrentLine}");
             }
 
@@ -230,7 +225,7 @@ namespace Spell.Syntax
 
             if (string.IsNullOrEmpty(leftToken.Text))
             {
-                Diagnostics.LogErrorMessage($"Error:  {CurrentLine.Span} Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.OpenParenthesisToken}>\n\t" +
+                throw new Exception($"Error: {CurrentLine.Span} Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.OpenParenthesisToken}>\n\t" +
                         $"{CurrentLine}");
             }
 
@@ -240,7 +235,7 @@ namespace Spell.Syntax
 
             if (string.IsNullOrEmpty(rightToken.Text))
             {
-                Diagnostics.LogErrorMessage($"Error: {CurrentLine.Span} Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.CloseParenthesisToken}>\n\t" +
+                throw new Exception($"Error: {CurrentLine.Span} Unexpected token <{CurrentSyntaxToken.SyntaxKind}>, expected <{SyntaxKind.CloseParenthesisToken}>\n\t" +
                         $"{CurrentLine}");
             }
 

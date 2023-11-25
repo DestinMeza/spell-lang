@@ -30,6 +30,7 @@ namespace Spell
 
         public void ResetCompilation() 
         {
+            variables.Clear();
             previousCompilation = null;
             Diagnostics.ClearLogs();
         }
@@ -89,12 +90,19 @@ namespace Spell
             }
             catch (Exception e)
             {
-                Diagnostics.LogErrorMessage($"Error: {e.Message}");
+                if (TextSpan.TryFindSpan(e.Message, out TextSpan textSpan))
+                {
+                    Diagnostics.LogErrorMessage($"Error: {e.Message}", textSpan);
+                }
+                else 
+                {
+                    Diagnostics.LogErrorMessage($"Error: {e.Message}");
+                }
 
                 var diagnostics = Diagnostics.GetLogs();
                 Diagnostics.ClearLogs();
 
-                evaluationResult = new EvaluationResult(syntaxTree?.Root.ToString() ?? null, diagnostics, null);
+                evaluationResult = new EvaluationResult(syntaxTree?.Root.ToString(variables) ?? null, diagnostics, null);
 
                 result.Result = evaluationResult;
             }
@@ -138,12 +146,19 @@ namespace Spell
             }
             catch (Exception e)
             {
-                Diagnostics.LogErrorMessage($"Error: {e.Message}");
+                if (TextSpan.TryFindSpan(e.Message, out TextSpan textSpan))
+                {
+                    Diagnostics.LogErrorMessage($"Error: {e.Message}", textSpan);
+                }
+                else
+                {
+                    Diagnostics.LogErrorMessage($"Error: {e.Message}");
+                }
 
                 var diagnostics = Diagnostics.GetLogs();
                 Diagnostics.ClearLogs();
 
-                evaluationResult = new EvaluationResult(syntaxTree?.Root.ToString() ?? null, diagnostics, null);
+                evaluationResult = new EvaluationResult(syntaxTree?.Root.ToString(variables) ?? null, diagnostics, null);
             }
 
             return evaluationResult;

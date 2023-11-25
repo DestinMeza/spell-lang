@@ -2,7 +2,7 @@
 {
     public sealed class VariableDeclarationSyntaxNode : StatementSyntaxNode 
     {
-        public override string Text { get => throw new System.NotImplementedException(); set { } }
+        public override string Text { get => $"{Keyword.Text} {Identifier.Text} {EqualsToken.Text} {Initalizer.Text}"; set { } }
         public override SyntaxKind SyntaxKind => SyntaxKind.VariableDeclaration;
 
         public SyntaxToken Keyword { get; }
