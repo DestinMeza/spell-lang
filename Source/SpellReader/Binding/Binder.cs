@@ -196,7 +196,7 @@ namespace Spell.Binding
 
             if (boundExpression.Type != variable.Type) 
             {
-                throw new Exception($"{syntaxNode.IdentifierToken.Span} Cannot convert variable \"{name}\" of type {variable.Type} to {boundExpression.Type}." +
+                throw new Exception($"{syntaxNode.ExpressionSyntaxNode.Span} Cannot convert variable \"{name}\" of type {variable.Type} to {boundExpression.Type}." +
                     $"\n\r\t{syntaxNode.Text}");
             }
 
@@ -222,7 +222,7 @@ namespace Spell.Binding
             {
                 string boundOperandType = boundOperand.Type?.ToString() ?? "null";
 
-                throw new NullReferenceException($"{syntaxNode.Span} Unary operator \"{syntaxNode.OperatorToken.Text}\" is not defined for type {boundOperandType}." +
+                throw new NullReferenceException($"{syntaxNode.OperatorToken.Span} Unary operator \"{syntaxNode.OperatorToken.Text}\" is not defined for type {boundOperandType}." +
                     $"\n\r\t{syntaxNode.Text}");
             }
 
@@ -256,7 +256,7 @@ namespace Spell.Binding
                 string boundLeftType = boundLeft.Type?.ToString() ?? "null";
                 string boundRightType = boundRight.Type?.ToString() ?? "null";
 
-                throw new NullReferenceException($"{syntaxNode.Span} Binary operator \"{syntaxNode.OperatorToken.Text}\" is not defined for type {boundLeftType} and {boundRightType}." +
+                throw new NullReferenceException($"{syntaxNode.OperatorToken.Span} Binary operator \"{syntaxNode.OperatorToken.Text}\" is not defined for type {boundLeftType} and {boundRightType}." +
                     $"\n\r\t{syntaxNode.Text}");
             }
 

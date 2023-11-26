@@ -116,6 +116,14 @@ namespace Spell
                     return Equals(left, right);
                 case BoundBinaryOperatorKind.NotEquals:
                     return !Equals(left, right);
+                case BoundBinaryOperatorKind.LessThan:
+                    return (int)left < (int)right;
+                case BoundBinaryOperatorKind.LessThanOrEquals:
+                    return (int)left <= (int)right;
+                case BoundBinaryOperatorKind.GreaterThan:
+                    return (int)left > (int)right;
+                case BoundBinaryOperatorKind.GreaterThanOrEquals:
+                    return (int)left >= (int)right;
                 default: throw new Exception($"Unexpected binary operator {b.BoundOperator.Kind}");
             }
         }

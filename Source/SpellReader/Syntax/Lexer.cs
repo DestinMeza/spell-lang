@@ -114,6 +114,30 @@ namespace Spell.Syntax
                         _position++;
                     }
                     break;
+                case '<':
+                    _position++;
+                    if (Current != '=')
+                    {
+                        _syntaxKind = SyntaxKind.LessToken;
+                    }
+                    else
+                    {
+                        _syntaxKind = SyntaxKind.LessOrEqualsToken;
+                        _position++;
+                    }
+                    break;
+                case '>':
+                    _position++;
+                    if (Current != '=')
+                    {
+                        _syntaxKind = SyntaxKind.GreaterToken;
+                    }
+                    else
+                    {
+                        _syntaxKind = SyntaxKind.GreaterOrEqualsToken;
+                        _position++;
+                    }
+                    break;
                 case '0': case '1': case '2': case '3': case '4': 
                 case '5': case '6': case '7': case '8': case '9':
                     ReadNumberToken();

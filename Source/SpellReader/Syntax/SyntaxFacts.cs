@@ -23,6 +23,10 @@ namespace Spell.Syntax
         CloseBraceToken,
         EqualsToken,
         EqualsEqualsToken,
+        LessToken,
+        LessOrEqualsToken,
+        GreaterToken,
+        GreaterOrEqualsToken,
         BangEqualsToken,
         AmpersandAmpersandToken,
         PipePipeToken,
@@ -31,8 +35,8 @@ namespace Spell.Syntax
 
         //Keywords
         FalseKeyword,
-        LetKeyword,
         TrueKeyword,
+        LetKeyword,
         VarKeyword,
 
         //Statements
@@ -68,13 +72,17 @@ namespace Spell.Syntax
                 case SyntaxKind.CloseBraceToken:            return "}";
                 case SyntaxKind.EqualsToken:                return "=";
                 case SyntaxKind.EqualsEqualsToken:          return "==";
+                case SyntaxKind.LessToken:                  return "<";
+                case SyntaxKind.LessOrEqualsToken:          return "<=";
+                case SyntaxKind.GreaterToken:               return ">";
+                case SyntaxKind.GreaterOrEqualsToken:       return ">=";
                 case SyntaxKind.BangEqualsToken:            return "!=";
                 case SyntaxKind.AmpersandAmpersandToken:    return "&&";
                 case SyntaxKind.PipePipeToken:              return "||";
                 case SyntaxKind.BangToken:                  return "!";
                 case SyntaxKind.FalseKeyword:               return "false";
-                case SyntaxKind.LetKeyword:                 return "let";
                 case SyntaxKind.TrueKeyword:                return "true";
+                case SyntaxKind.LetKeyword:                 return "let";
                 case SyntaxKind.VarKeyword:                 return "var";
 
                 default:
@@ -131,6 +139,10 @@ namespace Spell.Syntax
                 case SyntaxKind.MinusToken:
                     return 4;
 
+                case SyntaxKind.LessToken:
+                case SyntaxKind.LessOrEqualsToken:
+                case SyntaxKind.GreaterToken:
+                case SyntaxKind.GreaterOrEqualsToken:
                 case SyntaxKind.EqualsEqualsToken:
                 case SyntaxKind.BangEqualsToken:
                     return 3;
@@ -151,8 +163,8 @@ namespace Spell.Syntax
             switch (text) 
             {
                 case "false":   return SyntaxKind.FalseKeyword;
-                case "let":     return SyntaxKind.LetKeyword;
                 case "true":    return SyntaxKind.TrueKeyword;
+                case "let":     return SyntaxKind.LetKeyword;
                 case "var":     return SyntaxKind.VarKeyword;
 
                 default:        return SyntaxKind.IdentifierToken;
