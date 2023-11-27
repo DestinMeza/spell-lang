@@ -5,6 +5,7 @@
         //Statements
         ExpressionStatement,
         VariableDeclaration,
+        IfStatement,
         BlockStatement,
 
         //Expressions

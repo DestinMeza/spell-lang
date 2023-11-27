@@ -101,9 +101,34 @@ namespace Spell.Syntax
                 case SyntaxKind.LetKeyword:
                 case SyntaxKind.VarKeyword:
                     return ParseVariableDeclaration();
+                case SyntaxKind.IfKeyword:
+                    return ParseIfStatement();
+                default: 
+                    break;
             }
 
             return ParseExpressionStatement();
+        }
+
+        private StatementSyntaxNode ParseIfStatement() 
+        {
+            var keyword = MatchCurrentIncrement(SyntaxKind.IfKeyword);
+            var condition = ParseExpression();
+            var statement = ParseStatement();
+            var elseClause = ParseElseClause();
+            return new IfStatmentSyntaxNode(keyword, condition, statement, elseClause);
+        }
+
+        private ElseClauseSyntax ParseElseClause() 
+        {
+            if (CurrentSyntaxToken.SyntaxKind != SyntaxKind.ElseKeyword) 
+            {
+                return null;
+            }
+
+            var keyword = NextToken();
+            var statement = ParseStatement();
+            return new ElseClauseSyntax(keyword, statement);
         }
 
         private VariableDeclarationSyntaxNode ParseVariableDeclaration()

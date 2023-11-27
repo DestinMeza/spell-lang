@@ -38,11 +38,15 @@ namespace Spell.Syntax
         TrueKeyword,
         LetKeyword,
         VarKeyword,
+        IfKeyword,
+        ElseKeyword,
 
         //Statements
         BlockStatement,
         ExpressionStatement,
         VariableDeclaration,
+        IfStatement,
+        ElseClause,
 
         //Expressions
         LiteralExpression,
@@ -84,6 +88,8 @@ namespace Spell.Syntax
                 case SyntaxKind.TrueKeyword:                return "true";
                 case SyntaxKind.LetKeyword:                 return "let";
                 case SyntaxKind.VarKeyword:                 return "var";
+                case SyntaxKind.IfKeyword:                  return "if";
+                case SyntaxKind.ElseKeyword:                return "else";
 
                 default:
                     return null;
@@ -166,6 +172,8 @@ namespace Spell.Syntax
                 case "true":    return SyntaxKind.TrueKeyword;
                 case "let":     return SyntaxKind.LetKeyword;
                 case "var":     return SyntaxKind.VarKeyword;
+                case "if":      return SyntaxKind.IfKeyword;
+                case "else":    return SyntaxKind.ElseKeyword;
 
                 default:        return SyntaxKind.IdentifierToken;
             }

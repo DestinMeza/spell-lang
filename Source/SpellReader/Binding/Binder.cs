@@ -69,12 +69,35 @@ namespace Spell.Binding
                     return BindBlockStatement(((BlockStatementSyntaxNode)syntaxNode));
                 case SyntaxKind.VariableDeclaration:
                     return BindVariableDeclaration(((VariableDeclarationSyntaxNode)syntaxNode));
+                case SyntaxKind.IfStatement:
+                    return BindIfStatement((IfStatmentSyntaxNode)syntaxNode);
                 case SyntaxKind.ExpressionStatement:
-                    return BindExpressionStatement(((ExpressionStatementSyntaxNode)syntaxNode));
+                    return BindExpressionStatement((ExpressionStatementSyntaxNode)syntaxNode);
                 default:
                     throw new Exception($"{syntaxNode.Span} Unexpected syntax {syntaxNode.SyntaxKind}." +
                         $"\n\r{syntaxNode.Text}");
             }
+        }
+
+        private BoundStatement BindIfStatement(IfStatmentSyntaxNode syntaxNode)
+        {
+            var condition = BindExpression(syntaxNode.Condition, typeof(bool));
+            var thenStatement = BindStatement(syntaxNode.ThenStatement);
+            var elseStatement = syntaxNode.ElseClause == null ? null : BindStatement(syntaxNode.ElseClause.ElseStatement);
+
+            return new BoundIfStatement(condition, thenStatement, elseStatement);
+        }
+
+        private BoundExpressionNode BindExpression(ExpressionSyntaxNode syntaxNode, Type targetType) 
+        {
+            var result = BindExpression(syntaxNode);
+            if (result.Type != targetType) 
+            {
+                throw new Exception($"{syntaxNode.Span} Cannot convert of type {result.Type} to {targetType}." +
+                    $"\n\r\t{syntaxNode.Text}");
+            }
+
+            return result;
         }
 
         private BoundStatement BindVariableDeclaration(VariableDeclarationSyntaxNode syntaxNode)
