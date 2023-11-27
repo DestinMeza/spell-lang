@@ -40,6 +40,7 @@ namespace Spell.Syntax
         VarKeyword,
         IfKeyword,
         ElseKeyword,
+        WhileKeyword,
 
         //Statements
         BlockStatement,
@@ -47,6 +48,7 @@ namespace Spell.Syntax
         VariableDeclaration,
         IfStatement,
         ElseClause,
+        WhileStatement,
 
         //Expressions
         LiteralExpression,
@@ -90,6 +92,7 @@ namespace Spell.Syntax
                 case SyntaxKind.VarKeyword:                 return "var";
                 case SyntaxKind.IfKeyword:                  return "if";
                 case SyntaxKind.ElseKeyword:                return "else";
+                case SyntaxKind.WhileKeyword:               return "while";
 
                 default:
                     return null;
@@ -174,6 +177,7 @@ namespace Spell.Syntax
                 case "var":     return SyntaxKind.VarKeyword;
                 case "if":      return SyntaxKind.IfKeyword;
                 case "else":    return SyntaxKind.ElseKeyword;
+                case "while":   return SyntaxKind.WhileKeyword;
 
                 default:        return SyntaxKind.IdentifierToken;
             }

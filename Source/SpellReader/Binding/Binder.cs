@@ -71,12 +71,21 @@ namespace Spell.Binding
                     return BindVariableDeclaration(((VariableDeclarationSyntaxNode)syntaxNode));
                 case SyntaxKind.IfStatement:
                     return BindIfStatement((IfStatmentSyntaxNode)syntaxNode);
+                case SyntaxKind.WhileStatement:
+                    return BindWhileStatement((WhileStatementSyntaxNode)syntaxNode);
                 case SyntaxKind.ExpressionStatement:
                     return BindExpressionStatement((ExpressionStatementSyntaxNode)syntaxNode);
                 default:
                     throw new Exception($"{syntaxNode.Span} Unexpected syntax {syntaxNode.SyntaxKind}." +
                         $"\n\r{syntaxNode.Text}");
             }
+        }
+
+        private BoundStatement BindWhileStatement(WhileStatementSyntaxNode syntaxNode)
+        {
+            var condition = BindExpression(syntaxNode.Condition, typeof(bool));
+            var body = BindStatement(syntaxNode.Body);
+            return new BoundWhileStatement(condition, body);
         }
 
         private BoundStatement BindIfStatement(IfStatmentSyntaxNode syntaxNode)

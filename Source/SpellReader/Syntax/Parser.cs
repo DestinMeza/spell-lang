@@ -103,11 +103,21 @@ namespace Spell.Syntax
                     return ParseVariableDeclaration();
                 case SyntaxKind.IfKeyword:
                     return ParseIfStatement();
+                case SyntaxKind.WhileKeyword:
+                    return ParseWhileStatement();
                 default: 
                     break;
             }
 
             return ParseExpressionStatement();
+        }
+
+        private StatementSyntaxNode ParseWhileStatement()
+        {
+            var keyword = MatchCurrentIncrement(SyntaxKind.WhileKeyword);
+            var condition = ParseExpression();
+            var body = ParseStatement();
+            return new WhileStatementSyntaxNode(keyword, condition, body);
         }
 
         private StatementSyntaxNode ParseIfStatement() 
