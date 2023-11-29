@@ -34,6 +34,7 @@ namespace Spell
                 case BoundNodeKind.VariableDeclaration: EvaluateVariableDeclaration((BoundVariableDeclaration)node); break;
                 case BoundNodeKind.IfStatement:         EvaluateIfStatement((BoundIfStatement)node); break;
                 case BoundNodeKind.WhileStatement:      EvaluateWhileStatement((BoundWhileStatement)node); break;
+                case BoundNodeKind.ForStatement:        EvaluateForStatement((BoundForStatement)node); break;
                 case BoundNodeKind.ExpressionStatement: EvaluateExpressionStatement((BoundExpressionStatement)node); break;
                 default:
                     throw new NotSupportedException($"Node as \"{node.Kind}\" is not supported for evaluation.");
@@ -70,6 +71,18 @@ namespace Spell
                 }
 
                 EvaluateStatement(node.ElseStatement);
+            }
+        }
+
+        private void EvaluateForStatement(BoundForStatement node)
+        {
+            var lowerBound = (int) EvaluateExpression(node.LowerBound);
+            var upperBound = (int)EvaluateExpression(node.UpperBound);
+
+            for (var i = lowerBound; i <= upperBound; i++) 
+            {
+                _variables[node.Variable] = i;
+                EvaluateStatement(node.Body);
             }
         }
 

@@ -15,5 +15,6 @@
         BinaryExpression,
         VariableExpression,
         AssignmentExpression,
+        ForStatement,
     }
 }

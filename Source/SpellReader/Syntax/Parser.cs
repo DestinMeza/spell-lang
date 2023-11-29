@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Security;
 
 namespace Spell.Syntax
 {
@@ -105,7 +107,9 @@ namespace Spell.Syntax
                     return ParseIfStatement();
                 case SyntaxKind.WhileKeyword:
                     return ParseWhileStatement();
-                default: 
+                case SyntaxKind.ForKeyword:
+                    return ParseForStatement();
+                default:
                     break;
             }
 
@@ -118,6 +122,18 @@ namespace Spell.Syntax
             var condition = ParseExpression();
             var body = ParseStatement();
             return new WhileStatementSyntaxNode(keyword, condition, body);
+        }
+
+        private StatementSyntaxNode ParseForStatement() 
+        {
+            var keyword = MatchCurrentIncrement(SyntaxKind.ForKeyword);
+            var identifer = MatchCurrentIncrement(SyntaxKind.IdentifierToken);
+            var equalsToken = MatchCurrentIncrement(SyntaxKind.EqualsToken);
+            var lowerBound = ParseExpression();
+            var toKeyword = MatchCurrentIncrement(SyntaxKind.ToKeyword);
+            var upperBound = ParseExpression();
+            var body = ParseStatement();
+            return new ForStatementSyntaxNode(keyword, identifer, equalsToken, lowerBound, toKeyword, upperBound, body);
         }
 
         private StatementSyntaxNode ParseIfStatement() 
@@ -161,8 +177,30 @@ namespace Spell.Syntax
             while (CurrentSyntaxToken.SyntaxKind != SyntaxKind.EndOfFileToken &&
                    CurrentSyntaxToken.SyntaxKind != SyntaxKind.CloseBraceToken) 
             {
-                var statement = ParseStatement();
-                statements.Add(statement);
+                var startToken = CurrentSyntaxToken;
+
+                try
+                {
+                    var statement = ParseStatement();
+                    statements.Add(statement);
+
+                    //If token is not consuming to next token, force skip.
+                    if (CurrentSyntaxToken == startToken)
+                    {
+                        NextToken();
+                    }
+                }
+                catch (Exception e)
+                {
+                    string spanText = "";
+                    if (TextSpan.TryFindSpan(e.Message, out TextSpan textSpan))
+                    {
+                        spanText = textSpan.ToString();
+                    }
+
+                    throw new Exception($"{spanText} Failed to parse statement in block.\n\t" +
+                    $"{CurrentLine.Text}");
+                }
             }
 
             var closeBraceToken = MatchCurrentIncrement(SyntaxKind.CloseBraceToken);

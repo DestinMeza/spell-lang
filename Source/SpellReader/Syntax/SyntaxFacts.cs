@@ -41,6 +41,8 @@ namespace Spell.Syntax
         IfKeyword,
         ElseKeyword,
         WhileKeyword,
+        ForKeyword,
+        ToKeyword,
 
         //Statements
         BlockStatement,
@@ -49,6 +51,7 @@ namespace Spell.Syntax
         IfStatement,
         ElseClause,
         WhileStatement,
+        ForStatement,
 
         //Expressions
         LiteralExpression,
@@ -93,6 +96,8 @@ namespace Spell.Syntax
                 case SyntaxKind.IfKeyword:                  return "if";
                 case SyntaxKind.ElseKeyword:                return "else";
                 case SyntaxKind.WhileKeyword:               return "while";
+                case SyntaxKind.ForKeyword:                 return "for";
+                case SyntaxKind.ToKeyword:                  return "to";
 
                 default:
                     return null;
@@ -178,6 +183,8 @@ namespace Spell.Syntax
                 case "if":      return SyntaxKind.IfKeyword;
                 case "else":    return SyntaxKind.ElseKeyword;
                 case "while":   return SyntaxKind.WhileKeyword;
+                case "for":     return SyntaxKind.ForKeyword;
+                case "to":      return SyntaxKind.ToKeyword;
 
                 default:        return SyntaxKind.IdentifierToken;
             }

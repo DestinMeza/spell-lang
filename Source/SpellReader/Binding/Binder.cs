@@ -73,12 +73,37 @@ namespace Spell.Binding
                     return BindIfStatement((IfStatmentSyntaxNode)syntaxNode);
                 case SyntaxKind.WhileStatement:
                     return BindWhileStatement((WhileStatementSyntaxNode)syntaxNode);
+                case SyntaxKind.ForStatement:
+                    return BindForStatement((ForStatementSyntaxNode)syntaxNode);
                 case SyntaxKind.ExpressionStatement:
                     return BindExpressionStatement((ExpressionStatementSyntaxNode)syntaxNode);
                 default:
                     throw new Exception($"{syntaxNode.Span} Unexpected syntax {syntaxNode.SyntaxKind}." +
                         $"\n\r{syntaxNode.Text}");
             }
+        }
+
+        private BoundStatement BindForStatement(ForStatementSyntaxNode syntaxNode)
+        {
+            var lowerBound = BindExpression(syntaxNode.LowerBound, typeof(int));
+            var upperBound = BindExpression(syntaxNode.UpperBound, typeof(int));
+
+            _scope = new BoundScope(_scope);
+
+            var name = syntaxNode.Identifier.Text;
+            var variable = new VariableSymbol(name, true, typeof(int));
+
+            if (!_scope.TryDeclare(variable)) 
+            {
+                throw new Exception($"{syntaxNode.Identifier.Span} Variable {name} has already been defined." +
+                    $"\n\r\t{syntaxNode.Text}");
+            }
+
+            var body = BindStatement(syntaxNode.Body);
+
+            _scope = _scope.Parent;
+
+            return new BoundForStatement(variable, lowerBound, upperBound, body);
         }
 
         private BoundStatement BindWhileStatement(WhileStatementSyntaxNode syntaxNode)
